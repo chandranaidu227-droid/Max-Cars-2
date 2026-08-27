@@ -1,6 +1,9 @@
 "use client";
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace(/\/$/, "");
+export const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "development" ? "http://localhost:5000" : "")
+).replace(/\/$/, "");
 
 type ApiOptions = RequestInit & { authenticated?: boolean };
 

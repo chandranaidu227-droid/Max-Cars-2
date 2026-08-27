@@ -38,3 +38,12 @@ Admin-only:
 - `PATCH /api/admin/vehicles/:id`
 
 Run `npm test` to execute backend unit and HTTP tests.
+
+## Netlify deployment
+
+The repository includes `netlify/functions/api.js` and a rewrite from `/api/*`
+to that function. In Netlify, configure the private environment variables
+`MONGODB_URI` and `AUTH_SECRET`. Netlify's `URL` and `DEPLOY_PRIME_URL` are
+automatically added to the allowed CORS origins. Production frontend requests
+use the same-origin `/api` path; local development continues to use
+`http://localhost:5000`.

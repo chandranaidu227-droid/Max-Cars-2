@@ -9,7 +9,9 @@ function config() {
     port: Number(process.env.PORT) || 5000,
     mongoUri: process.env.MONGODB_URI,
     authSecret: process.env.AUTH_SECRET,
-    clientOrigins: (process.env.CLIENT_ORIGINS || "http://localhost:3000,http://localhost:5173")
+    clientOrigins: [process.env.CLIENT_ORIGINS || "http://localhost:3000,http://localhost:5173", process.env.URL, process.env.DEPLOY_PRIME_URL]
+      .filter(Boolean)
+      .join(",")
       .split(",")
       .map((value) => value.trim())
       .filter(Boolean),

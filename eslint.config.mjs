@@ -17,7 +17,7 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["backend/**/*.js"],
+    files: ["backend/**/*.js", "netlify/functions/**/*.js"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },
