@@ -799,7 +799,7 @@ export function AuthExperience({
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget),
-      email = String(f.get("email") || "");
+      email = String(f.get("email") || "").trim().toLowerCase();
     if (mode === "signup" && f.get("password") !== f.get("confirm")) {
       setMessage("Passwords do not match.");
       return;
@@ -859,7 +859,7 @@ export function AuthExperience({
             </label>
             <label>
               Phone
-              <input name="phone" required pattern="[0-9]{10}" />
+              <input name="phone" required type="tel" inputMode="tel" autoComplete="tel-national" pattern="[0-9+ -]{10,16}" placeholder="10-digit number or +91 format" />
             </label>
             <label>
               City
@@ -874,7 +874,7 @@ export function AuthExperience({
         )}
         <label>
           Email address
-          <input name="email" type="email" required />
+          <input name="email" type="email" inputMode="email" autoComplete="email" required placeholder="name@example.com" />
         </label>
         {mode !== "forgot" && (
           <>
@@ -883,6 +883,7 @@ export function AuthExperience({
               <input
                 name="password"
                 type={show ? "text" : "password"}
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
                 required
                 minLength={8}
               />

@@ -11,17 +11,22 @@ module.exports = function authRoutes(secret, authenticate) {
 
   router.post("/register", asyncRoute(async (req, res) => {
     const { name, email, password, phone = "", city = "" } = req.body || {};
-    if (String(name).trim().length < 2 || !emailPattern.test(String(email).toLowerCase()) || String(password).length < 8) {
-      return res.status(400).json({ success: false, message: "Provide a valid name, email and password of at least 8 characters" });
-    }
+    const normalizedName = String(name || "").trim();
     const normalizedEmail = String(email).trim().toLowerCase();
+    const normalizedPhone = String(phone).replace(/\D/g, "").replace(/^91(?=\d{10}$)/, "");
+    if (normalizedName.length < 2) return res.status(400).json({ success: false, message: "Enter your full name" });
+    if (!emailPattern.test(normalizedEmail)) return res.status(400).json({ success: false, message: "Enter a valid email address" });
+    if (String(password || "").length < 8) return res.status(400).json({ success: false, message: "Password must contain at least 8 characters" });
+    if (normalizedPhone && !/^\d{10}$/.test(normalizedPhone)) return res.status(400).json({ success: false, message: "Enter a valid 10-digit Indian mobile number" });
     if (await User.exists({ email: normalizedEmail })) return res.status(409).json({ success: false, message: "An account with this email already exists" });
-    const user = await User.create({ name: String(name).trim(), email: normalizedEmail, phone, city, passwordHash: await hashPassword(String(password)) });
+    const user = await User.create({ name: normalizedName, email: normalizedEmail, phone: normalizedPhone, city, passwordHash: await hashPassword(String(password)) });
     res.status(201).json({ success: true, token: signToken(user, secret), user: publicUser(user) });
   }));
 
   router.post("/login", asyncRoute(async (req, res) => {
     const email = String(req.body?.email || "").trim().toLowerCase();
+    if (!emailPattern.test(email)) return res.status(400).json({ success: false, message: "Enter a valid email address" });
+    if (String(req.body?.password || "").length < 8) return res.status(400).json({ success: false, message: "Enter your password of at least 8 characters" });
     const user = await User.findOne({ email }).select("+passwordHash");
     if (!user || !user.active || !(await verifyPassword(String(req.body?.password || ""), user.passwordHash))) {
       return res.status(401).json({ success: false, message: "Invalid email or password" });
