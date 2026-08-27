@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { cars, Car, money, short } from "./data";
+import { apiRequest, saveApiSession } from "./api-client";
 const notifyState = () => dispatchEvent(new Event("max-state"));
 function useSaved(key: string, seed: string[] = []) {
   const [value, setValue] = useState<string[]>(seed);
@@ -622,7 +623,7 @@ export function SellExperience() {
             </label>
             <label>
               Number of owners
-              <select>
+              <select name="city">
                 <option>1</option>
                 <option>2</option>
                 <option>3+</option>
@@ -793,48 +794,37 @@ export function AuthExperience({
   mode: "login" | "signup" | "forgot";
 }) {
   const [show, setShow] = useState(false),
-    [message, setMessage] = useState("");
-  const submit = (e: React.FormEvent<HTMLFormElement>) => {
+    [message, setMessage] = useState(""),
+    [submitting, setSubmitting] = useState(false);
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget),
       email = String(f.get("email") || "");
-    if (mode === "forgot") {
-      setMessage(
-        "If an account exists, recovery instructions have been prepared.",
-      );
+    if (mode === "signup" && f.get("password") !== f.get("confirm")) {
+      setMessage("Passwords do not match.");
       return;
     }
-    if (mode === "signup") {
-      if (f.get("password") !== f.get("confirm")) {
-        setMessage("Passwords do not match.");
+    setSubmitting(true);
+    setMessage("");
+    try {
+      if (mode === "forgot") {
+        const result = await apiRequest<{message:string}>("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) });
+        setMessage(result.message);
         return;
       }
-      localStorage.setItem(
-        `max-user:${email}`,
-        JSON.stringify({
-          name: f.get("name"),
-          email,
-          password: f.get("password"),
-        }),
-      );
-    } else {
-      const user = JSON.parse(
-        localStorage.getItem(`max-user:${email}`) || "null",
-      );
-      if (!user || user.password !== f.get("password")) {
-        setMessage("We couldn’t sign you in with those details.");
-        return;
-      }
+      const path = mode === "signup" ? "/api/auth/register" : "/api/auth/login";
+      const body = mode === "signup"
+        ? { name: f.get("name"), email, password: f.get("password"), phone: f.get("phone"), city: f.get("city") }
+        : { email, password: f.get("password") };
+      const result = await apiRequest<{token:string;user:{name:string;email:string;role?:string}}>(path, { method: "POST", body: JSON.stringify(body) });
+      saveApiSession(result.token, result.user);
+      const returnTo = new URLSearchParams(location.search).get("returnTo");
+      location.href = returnTo?.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/dashboard";
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to contact the MAX CARS API.");
+    } finally {
+      setSubmitting(false);
     }
-    const user = JSON.parse(
-      localStorage.getItem(`max-user:${email}`) || "null",
-    );
-    localStorage.setItem(
-      "max-session",
-      JSON.stringify({ name: user?.name || "Driver", email }),
-    );
-    notifyState();
-    location.href = "/dashboard";
   };
   return (
     <section className={`auth-page ${mode}`}>
@@ -928,8 +918,8 @@ export function AuthExperience({
             {message}
           </p>
         )}
-        <button className="red">
-          {mode === "signup"
+        <button className="red" disabled={submitting}>
+          {submitting ? "Please wait…" : mode === "signup"
             ? "Create secure account"
             : mode === "forgot"
               ? "Send recovery instructions"

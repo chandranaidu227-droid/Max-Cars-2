@@ -1,35 +1,25 @@
-const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
+const { config } = require("./src/config");
+const { createApp } = require("./src/app");
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.send("MAX CARS Backend is running!");
-});
-
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "MAX CARS API connected successfully",
+async function start() {
+  const settings = config();
+  await mongoose.connect(settings.mongoUri);
+  console.log("MongoDB connected successfully");
+  const server = createApp(settings).listen(settings.port, () => {
+    console.log(`MAX CARS server running on port ${settings.port}`);
   });
+  const shutdown = async () => {
+    server.close();
+    await mongoose.disconnect();
+    process.exit(0);
+  };
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+}
+
+start().catch((error) => {
+  console.error("Backend startup failed:", error.message);
+  process.exit(1);
 });
-
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected successfully");
-
-    app.listen(process.env.PORT || 5000, () => {
-      console.log(
-        `🚗 MAX CARS server running on port ${process.env.PORT || 5000}`,
-      );
-    });
-  })
-  .catch((error) => {
-    console.error("❌ MongoDB connection failed:", error.message);
-  });

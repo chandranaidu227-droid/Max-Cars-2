@@ -1,11 +1,12 @@
 "use client";
 import {useEffect,useState} from "react";
+import {clearApiSession} from "./api-client";
 
 export default function ProfileMenu({name}:{name:string}){
   const [avatar,setAvatar]=useState("");
   useEffect(()=>{const timer=window.setTimeout(()=>setAvatar(localStorage.getItem("max-avatar")||""),0);return()=>window.clearTimeout(timer)},[]);
   const initials=name.trim().split(/\s+/).map(part=>part[0]).join("").slice(0,2).toUpperCase()||"MC";
-  const logout=()=>{localStorage.removeItem("max-session");localStorage.removeItem("max-avatar");dispatchEvent(new Event("max-state"));location.replace("/")};
+  const logout=()=>{clearApiSession();localStorage.removeItem("max-avatar");location.replace("/")};
   return <div className="profile">
     <a className="profile-direct" href="/profile" aria-label={`Open ${name}'s profile`}>
       <span className="profile-avatar">{avatar?<img src={avatar} alt={`${name} profile`}/>:initials}</span>
