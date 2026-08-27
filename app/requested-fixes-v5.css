@@ -1,0 +1,189 @@
+/* Keep navigation and editorial content in separate, stable stacking layers. */
+html{scroll-padding-top:84px}
+.global-nav.nav-v2{isolation:isolate;overflow:visible!important;contain:layout style;z-index:1500!important}
+.global-nav.nav-v2 .nav-icon{display:block!important;flex:0 0 16px;width:16px;height:16px;overflow:visible;font-size:0;line-height:0}
+.global-nav.nav-v2>nav>a,.global-nav.nav-v2 .tools>a{white-space:nowrap}
+.nav-search-backdrop,.mobile-menu.nav-sheet{z-index:1700!important}
+.m8-kicker{top:max(104px,calc(env(safe-area-inset-top) + 92px))}
+.m8-copy{max-height:calc(100svh - 250px)}
+.m8-copy h1{font-size:clamp(62px,7.2vw,116px);line-height:.82}
+
+/* Profile: restore the full-width premium garage image requested by the user. */
+.profile-hero-v2{min-height:88svh!important;background:#070809!important;isolation:isolate}
+.profile-hero-v2:before{display:none!important}
+.profile-hero-v2>img{display:block!important;position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 58%;filter:saturate(.82) contrast(1.08)}
+.profile-hero-shade{z-index:-1;background:linear-gradient(90deg,rgba(5,6,8,.94) 0,rgba(5,6,8,.62) 45%,rgba(5,6,8,.1) 76%),linear-gradient(0deg,#070809 0,transparent 42%),linear-gradient(180deg,rgba(5,6,8,.34),transparent 25%)}
+
+/* Sell Your Car: one full-screen photographic hero, no hero video. */
+.sell-hero{position:relative;isolation:isolate;display:flex!important;align-items:flex-end;min-height:100svh!important;padding:0!important;overflow:hidden;background:#080a0d}
+.sell-hero-background{position:absolute;z-index:-2;inset:0;background:url('/max-cars-sell-inspection-v2-poster.jpg') center/cover no-repeat;transform:scale(1.015)}
+.sell-hero>.sell-hero-background{background-image:url('/max-cars-sell-inspection-v2-poster.jpg')!important;background-position:center;background-size:cover;background-repeat:no-repeat}
+.sell-hero:after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(5,6,8,.93) 0,rgba(5,6,8,.63) 42%,rgba(5,6,8,.12) 72%),linear-gradient(0deg,#080a0d 0,transparent 42%),linear-gradient(180deg,rgba(5,6,8,.35),transparent 24%);pointer-events:none}
+.sell-hero-content{width:min(760px,92vw);padding:clamp(130px,18vh,190px) 6vw clamp(70px,10vh,108px)!important;background:none!important}
+.sell-hero-content h1{font-size:clamp(58px,7vw,108px)}
+.sell-hero-content p{color:#e0e4e8;text-shadow:0 1px 5px #000}
+.sell-hero-content dl{max-width:650px;background:rgba(255,255,255,.18)}
+.sell-hero-content dl span{background:rgba(8,10,13,.7);backdrop-filter:blur(4px)}
+
+/* MAX 3D: realistic studio film fills the first viewport. */
+.max3d-video-hero{position:relative;isolation:isolate;display:flex!important;align-items:flex-end;min-height:100svh!important;padding:0!important;overflow:hidden;background:#050608}
+.max3d-video-hero>video{position:absolute;z-index:-3;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.max3d-video-shade{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,rgba(5,6,8,.92),rgba(5,6,8,.38) 52%,rgba(5,6,8,.08)),linear-gradient(0deg,#050608 0,transparent 38%),linear-gradient(180deg,rgba(5,6,8,.42),transparent 28%);pointer-events:none}
+.max3d-video-hero .landing-copy{width:min(820px,70vw);padding:clamp(130px,18vh,190px) 6vw clamp(60px,9vh,100px)}
+.max3d-video-hero .landing-copy h1{max-width:800px;color:#fff;text-shadow:0 2px 18px #000}
+.max3d-video-hero .landing-copy>p{color:#e1e5e8;text-shadow:0 1px 5px #000}
+.max3d-video-hero .landing-copy dl{max-width:680px;background:rgba(255,255,255,.18)}
+.max3d-video-hero .landing-copy dl span{background:rgba(6,8,10,.72);backdrop-filter:blur(5px)}
+.max3d-media-credit{margin-top:16px;color:#bec5cc;font:7px "IBM Plex Mono",monospace;font-style:normal;letter-spacing:.08em;text-shadow:0 1px 4px #000}
+
+@media(max-height:760px) and (min-width:681px){.m8-kicker{top:88px}.m8-copy{bottom:116px}.m8-copy h1{margin-block:12px;font-size:clamp(54px,6.4vw,88px)}.m8-copy p{margin-block:8px}.m8-copy nav{margin-top:15px}.m8-specs{bottom:32px}.m8-source{display:none}}
+@media(max-width:900px){.sell-hero-background{background-position:62% center}.sell-hero-content{width:min(680px,100%);padding-inline:24px!important}.max3d-video-hero .landing-copy{width:min(720px,100%);padding-inline:24px}.profile-hero-v2>img{object-position:58% center}}
+@media(max-width:680px){.m8-kicker{top:max(82px,calc(env(safe-area-inset-top) + 72px))}.m8-copy{bottom:196px;max-height:none}.m8-copy h1{font-size:54px}.sell-hero{min-height:820px!important}.sell-hero-background{background-position:66% center}.sell-hero-content{padding:120px 18px 64px!important}.sell-hero-content h1{font-size:54px}.sell-hero-content dl{grid-template-columns:1fr 1fr}.max3d-video-hero{min-height:820px!important}.max3d-video-hero>video{object-position:62% center}.max3d-video-hero .landing-copy{padding:120px 18px 58px}.max3d-video-hero .landing-copy h1{font-size:56px}.max3d-video-hero .landing-copy dl{grid-template-columns:1fr}.profile-hero-v2{min-height:780px!important}.profile-hero-v2>img{object-position:64% center}}
+@media(prefers-reduced-motion:reduce){.max3d-video-hero>video{display:none}.max3d-video-hero{background:url('/max3d-studio-real-poster.jpg') center/cover no-repeat}.sell-hero-background{transform:none}}
+
+/* Explore Cars: full-screen cinematic discovery film, matching MAX 3D's format. */
+.explore-hero{position:relative;isolation:isolate;display:flex!important;align-items:flex-end;min-height:100svh!important;padding:0!important;overflow:hidden;background:#070809}
+.explore-film{position:absolute!important;z-index:-3;inset:0;width:100%;height:100%}
+.explore-film:after{display:none!important}
+.explore-film video{width:100%;height:100%;object-fit:cover;object-position:center}
+.explore-hero-shade{position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,rgba(5,6,8,.91) 0,rgba(5,6,8,.48) 46%,rgba(5,6,8,.08) 76%),linear-gradient(0deg,#080808 0,transparent 40%),linear-gradient(180deg,rgba(5,6,8,.38),transparent 25%);pointer-events:none}
+.explore-copy{position:relative;z-index:2;justify-content:flex-end!important;width:min(780px,72vw);padding:clamp(130px,18vh,190px) 6vw clamp(62px,9vh,98px)!important}
+.explore-copy h1{max-width:760px;color:#fff;font-size:clamp(58px,7vw,106px);line-height:.86;text-shadow:0 2px 18px #000}
+.explore-copy>p{max-width:610px;color:#e1e4e7;text-shadow:0 1px 5px #000}
+.explore-copy>label{width:min(610px,100%);margin-top:22px;color:#d4d9de}
+.explore-copy>label input{min-height:52px;border-color:rgba(255,255,255,.5)!important;background:rgba(7,9,12,.58)!important;color:#fff!important;backdrop-filter:blur(5px)}
+.explore-copy nav{max-width:680px}
+.explore-copy nav>*{border-color:rgba(255,255,255,.65)!important;background:rgba(7,9,12,.36)!important;color:#fff!important;backdrop-filter:blur(3px)}
+.explore-copy nav button{border-color:#ef233c!important;background:#ef233c!important}
+.explore-media-credit{margin-top:15px;color:#c5cbd1;font:7px "IBM Plex Mono",monospace;font-style:normal;letter-spacing:.08em;text-shadow:0 1px 4px #000}
+
+/* Professional text-only MAX CARS navbar wordmark. */
+.global-nav.nav-v2 .logo{position:relative;min-width:136px;padding-left:18px;text-decoration:none}
+.global-nav.nav-v2 .logo:before{content:"";position:absolute;left:0;top:50%;width:3px;height:30px;background:linear-gradient(180deg,#ef233c 0 66%,#f7f8fa 66%);transform:translateY(-50%) skewX(-12deg)}
+.global-nav.nav-v2 .logo b{display:block!important;color:#f7f8fa;font-family:Manrope,Arial,sans-serif;font-size:15px!important;font-weight:900;letter-spacing:.17em;white-space:nowrap;text-shadow:0 1px 4px #000}
+.global-nav.nav-v2 .logo em{color:#ef233c}
+
+@media(max-width:900px){.explore-copy{width:min(720px,100%);padding-inline:24px!important}.explore-film video{object-position:57% center}.bmw-range>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.explore-hero{min-height:840px!important}.explore-film video{object-position:62% center}.explore-copy{padding:118px 18px 58px!important}.explore-copy h1{font-size:55px}.explore-copy nav{display:grid;grid-template-columns:1fr 1fr}.explore-copy nav>*{display:grid;place-items:center;min-height:44px;padding:8px!important}.global-nav.nav-v2 .logo{min-width:116px;padding-left:14px}.global-nav.nav-v2 .logo:before{height:26px}.global-nav.nav-v2 .logo b{font-size:13px!important}.bmw-range>div{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.explore-film video{display:none}.explore-film{background:url('/explore-cars-cinematic-poster.jpg') center/cover no-repeat}}
+
+/* Route-specific visual identities. Each major destination keeps its own image. */
+.route-stage{--route-image:none;--route-position:center;position:relative;isolation:isolate;min-height:70vh;background-color:var(--theme-bg,#181a1d);background-image:linear-gradient(180deg,rgba(20,22,25,.18),var(--theme-bg,#181a1d) 88vh),var(--route-image);background-position:center top,var(--route-position);background-size:100% 1000px,cover;background-repeat:no-repeat;background-attachment:scroll,fixed}
+.route-home{--route-image:url('/bmw-m8-home-poster.jpg')}
+.route-explore{--route-image:url('/explore-cars-cinematic-poster.jpg')}
+.route-max3d{--route-image:url('/max3d-studio-real-poster.jpg')}
+.route-compare{--route-image:url('/max-cars-real-drift-poster.jpg')}
+.route-electric{--route-image:url('/vehicles/porsche-taycan-4s/gallery-1.webp')}
+.route-sell{--route-image:url('/max-cars-sell-inspection-v2-poster.jpg')}
+.route-location{--route-image:url('/max-cars-luxury-city-poster.jpg')}
+.route-support{--route-image:url('/max-cars-support-advisor.png');--route-position:70% top}
+.route-profile{--route-image:url('/vehicles/bmw-i7-xdrive60/gallery-1.webp')}
+.route-finance{--route-image:url('/vehicles/bentley-continental-gt/gallery-1.webp')}
+
+/* Full-screen still-image heroes for Compare, Location and Support. */
+.compare-hero-v2.compare-image-hero,.location-hero-v3,.support-cinematic-hero{position:relative!important;isolation:isolate;display:flex!important;align-items:flex-end!important;min-height:100svh!important;padding:0!important;overflow:hidden;background:#17191c!important}
+.compare-image-hero>figure,.location-hero-v3>.location-image-hero,.support-cinematic-hero>.support-hero-media{position:absolute!important;z-index:-2!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;aspect-ratio:auto!important;margin:0!important;border:0!important;border-radius:0!important;mask-image:none!important;-webkit-mask-image:none!important;background:#17191c!important}
+.compare-image-hero>figure:after,.location-image-hero:after,.support-hero-media:after{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(90deg,rgba(14,16,19,.94) 0,rgba(14,16,19,.58) 47%,rgba(14,16,19,.12) 78%),linear-gradient(0deg,var(--theme-bg,#181a1d),transparent 43%),linear-gradient(180deg,rgba(10,11,13,.38),transparent 28%);pointer-events:none}
+.compare-image-hero figure>img,.location-image-hero>img,.support-hero-media>img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.84) contrast(1.06)}
+.compare-image-hero>div,.location-hero-v3>.location-hero-copy,.support-cinematic-hero>header{position:relative!important;z-index:2!important;display:flex!important;flex-direction:column;justify-content:flex-end!important;width:min(820px,74vw)!important;max-width:none!important;margin:0!important;padding:clamp(130px,18vh,190px) 6vw clamp(66px,9vh,100px)!important;background:transparent!important}
+.compare-image-hero h1,.location-hero-v3 h1,.support-cinematic-hero h1{color:#fff;text-shadow:0 2px 18px #000}
+.compare-image-hero p,.location-hero-v3 p,.support-cinematic-hero p,.support-cinematic-hero strong{color:#e3e6e9!important;text-shadow:0 1px 5px #000}
+.compare-image-hero>div>nav{display:flex;gap:8px;margin-top:24px}.compare-image-hero>div>nav a{margin:0}.compare-image-hero>div>nav a+ a{border:1px solid rgba(255,255,255,.65);background:rgba(10,12,15,.32)}
+.compare-image-hero>div>dl{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:640px;margin:30px 0 0;background:rgba(255,255,255,.22)}.compare-image-hero>div>dl span{padding:13px;background:rgba(14,16,19,.7);color:#c5cbd1;font-size:8px}.compare-image-hero>div>dl b{display:block;margin-bottom:5px;color:#fff;font-size:18px}
+.compare-image-hero figcaption,.location-image-hero figcaption,.support-hero-media figcaption{position:absolute;z-index:3;right:20px;bottom:18px;left:auto;color:#e2e6ea;font:7px "IBM Plex Mono",monospace;letter-spacing:.08em;text-shadow:0 1px 4px #000}
+.compare-picker button{color:#111820!important;font-weight:700}
+.compare-picker button:hover,.compare-picker button:focus-visible{background:#e7edf1;color:#111820!important}
+.compare-picker button.active{background:var(--theme-accent)!important;border-color:var(--theme-accent)!important;color:#fff!important}
+.compare-picker button.compare-reset{background:transparent;color:var(--theme-text)!important;border-color:var(--theme-line)}
+.compare-picker button:disabled{cursor:not-allowed;opacity:.45}
+.compare-picker-status{margin:-12px 0 24px;color:var(--theme-muted);font:8px "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase}
+.m8-hero-image{position:absolute;z-index:-4;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.92) contrast(1.06)}
+.bmw-media-journal{display:grid;grid-template-columns:.85fr 1.15fr;min-height:620px;background:var(--theme-surface);color:var(--theme-text)}
+.bmw-media-journal-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(42px,7vw,110px)}
+.bmw-media-journal-copy small,.bmw-ownership-hub small{color:var(--theme-accent);font:800 9px "IBM Plex Mono",monospace;letter-spacing:.15em}
+.bmw-media-journal-copy h2,.bmw-ownership-hub h2{max-width:620px;margin:16px 0;font-size:clamp(44px,5.5vw,78px);font-weight:300;line-height:.94;letter-spacing:-.05em}
+.bmw-media-journal-copy p{max-width:480px;color:var(--theme-muted);line-height:1.7}
+.bmw-media-journal-copy nav{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+.bmw-media-journal-copy nav a{display:inline-flex;align-items:center;min-height:46px;padding:0 16px;border:1px solid var(--theme-line);color:var(--theme-text);font-size:9px;text-decoration:none}
+.bmw-media-journal-copy nav a.red{border-color:var(--theme-accent);color:#fff}
+.bmw-media-journal figure{position:relative;min-height:500px;margin:0;overflow:hidden;background:#111}
+.bmw-media-journal video{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.06)}
+.bmw-media-journal figure:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--theme-surface),transparent 28%),linear-gradient(0deg,rgba(0,0,0,.55),transparent 35%);pointer-events:none}
+.bmw-media-journal figcaption{position:absolute;z-index:1;right:20px;bottom:18px;color:#fff;font:8px "IBM Plex Mono",monospace;letter-spacing:.08em;text-shadow:0 1px 4px #000}
+.bmw-ownership-hub{padding:110px 5vw;background:var(--theme-bg);color:var(--theme-text)}
+.bmw-ownership-hub>header{position:static;display:flex;justify-content:space-between;align-items:end;gap:30px;width:auto;height:auto;max-width:1400px;margin:0 auto 42px;padding:0;background:none;border:0;box-shadow:none}
+.bmw-ownership-hub>header p{max-width:420px;margin:0;color:var(--theme-muted);line-height:1.7}
+.bmw-ownership-grid{display:grid;grid-template-columns:repeat(4,1fr);max-width:1400px;margin:auto;border-top:1px solid var(--theme-line);border-left:1px solid var(--theme-line)}
+.bmw-ownership-grid a{display:flex;flex-direction:column;min-height:260px;padding:22px;border-right:1px solid var(--theme-line);border-bottom:1px solid var(--theme-line);color:var(--theme-text);text-decoration:none;transition:background .25s,transform .25s}
+.bmw-ownership-grid a:hover{background:color-mix(in srgb,var(--theme-accent) 12%,transparent);transform:translateY(-4px)}
+.bmw-ownership-grid b{color:var(--theme-accent);font:9px "IBM Plex Mono",monospace}.bmw-ownership-grid strong{margin-top:70px;font-size:20px}.bmw-ownership-grid span{margin-top:8px;color:var(--theme-muted);font-size:10px;line-height:1.5}.bmw-ownership-grid em{margin-top:auto;color:var(--theme-text);font-size:9px;font-style:normal}
+.bmw-visual-garage{padding:110px 5vw;background:var(--theme-surface);color:var(--theme-text)}
+.bmw-visual-garage>header,.bmw-video-rail>header{display:flex;justify-content:space-between;align-items:end;gap:30px;max-width:1400px;margin:0 auto 42px}
+.bmw-visual-garage h2,.bmw-video-rail h2{max-width:700px;margin:16px 0 0;font-size:clamp(44px,5.5vw,78px);font-weight:300;line-height:.94;letter-spacing:-.05em}
+.bmw-visual-garage>header>a{color:var(--theme-text);font-size:10px;font-weight:800;text-decoration:none}
+.bmw-visual-grid{display:grid;grid-template-columns:1.2fr .8fr .8fr 1.2fr;gap:10px;max-width:1400px;margin:auto}
+.bmw-visual-grid a{position:relative;min-height:360px;overflow:hidden;color:#fff;text-decoration:none;background:var(--theme-surface-2)}
+.bmw-visual-grid a:nth-child(2),.bmw-visual-grid a:nth-child(3){min-height:280px;margin-top:80px}
+.bmw-visual-grid img{width:100%;height:100%;object-fit:cover;transition:transform .55s cubic-bezier(.16,1,.3,1),filter .3s}.bmw-visual-grid a:hover img{transform:scale(1.05);filter:brightness(.8)}
+.bmw-visual-grid a:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.82));pointer-events:none}
+.bmw-visual-grid span{position:absolute;z-index:1;right:18px;bottom:17px;left:18px;display:grid;gap:5px}.bmw-visual-grid b{font-size:18px}.bmw-visual-grid small{color:#d3d8dc;font-size:8px}
+.bmw-video-rail{padding:110px 5vw;background:var(--theme-bg);color:var(--theme-text)}
+.bmw-video-rail>header p{max-width:420px;margin:0;color:var(--theme-muted);line-height:1.7}.bmw-video-rail>div{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-width:1400px;margin:auto}.bmw-video-rail figure{position:relative;min-height:460px;margin:0;overflow:hidden;background:#101318}.bmw-video-rail video{display:block;width:100%;height:100%;min-height:460px;object-fit:cover}.bmw-video-rail figure:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.72),transparent 42%);pointer-events:none}.bmw-video-rail figcaption{position:absolute;z-index:1;right:18px;bottom:18px;left:18px;color:#fff;font:8px "IBM Plex Mono",monospace;letter-spacing:.08em}
+@media(max-width:900px){.bmw-media-journal{grid-template-columns:1fr}.bmw-media-journal figure{min-height:440px;grid-row:1}.bmw-media-journal-copy{padding:70px 6vw}.bmw-ownership-hub>header{display:block}.bmw-ownership-hub>header p{margin-top:18px}.bmw-ownership-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.bmw-visual-garage>header,.bmw-video-rail>header{display:block}.bmw-visual-garage>header>a{display:inline-block;margin-top:18px}.bmw-visual-grid{grid-template-columns:1fr 1fr}.bmw-visual-grid a:nth-child(2),.bmw-visual-grid a:nth-child(3){margin-top:0}.bmw-video-rail>div{grid-template-columns:1fr}}
+@media(max-width:680px){.bmw-media-journal figure{min-height:330px}.bmw-media-journal-copy{padding:60px 22px}.bmw-media-journal-copy h2,.bmw-ownership-hub h2,.bmw-visual-garage h2,.bmw-video-rail h2{font-size:50px}.bmw-ownership-hub,.bmw-visual-garage,.bmw-video-rail{padding:75px 17px}.bmw-ownership-grid{grid-template-columns:1fr}.bmw-ownership-grid a{min-height:190px}.bmw-ownership-grid strong{margin-top:45px}.bmw-visual-grid{grid-template-columns:1fr}.bmw-visual-grid a,.bmw-visual-grid a:nth-child(2),.bmw-visual-grid a:nth-child(3){min-height:280px}.bmw-video-rail figure,.bmw-video-rail video{min-height:300px}}
+.location-image-features,.support-image-features{position:absolute;z-index:3;right:5vw;bottom:78px;display:grid;grid-template-columns:repeat(3,minmax(130px,1fr));gap:1px;width:min(590px,44vw);background:rgba(255,255,255,.2)}
+.location-image-features span,.support-image-features span{display:grid;gap:5px;padding:14px;background:rgba(13,15,18,.72);color:#c3c9cf;font-size:8px;backdrop-filter:blur(5px)}.location-image-features b,.support-image-features b{color:#fff;font-size:10px}
+.support-cinematic-hero header nav{flex-wrap:wrap}.support-cinematic-hero header nav button,.support-cinematic-hero header nav a,.hero-location-actions button,.hero-location-actions a{border-radius:8px!important}
+
+/* Premium grouped footer launcher instead of loose text links. */
+.route-stage~footer.site-footer-v2{position:relative;z-index:2;display:grid!important;grid-template-columns:minmax(280px,.72fr) minmax(660px,1.28fr)!important;gap:clamp(40px,6vw,90px)!important;padding:84px clamp(20px,5vw,78px) 28px!important;background:radial-gradient(circle at 8% 20%,color-mix(in srgb,var(--theme-accent,#c53b48) 12%,transparent),transparent 27%),linear-gradient(145deg,var(--theme-surface,#24272b),var(--theme-bg,#181a1d))!important;border-top:1px solid var(--theme-line,rgba(255,255,255,.14))!important}
+.site-footer-v2 .footer-brand p{max-width:540px!important;text-align:left!important;color:var(--theme-muted,#adb2b8)!important;font-size:14px!important;line-height:1.75}.footer-primary-action{display:flex!important;justify-content:space-between;align-items:center;width:min(310px,100%);min-height:50px;margin-top:28px;padding:0 17px;border:1px solid color-mix(in srgb,var(--theme-accent,#c53b48) 72%,white);border-radius:9px;background:linear-gradient(135deg,var(--theme-accent,#c53b48),color-mix(in srgb,var(--theme-accent,#c53b48) 72%,black));color:#fff!important;text-decoration:none;font-weight:800;letter-spacing:.05em}
+.site-footer-v2 .footer-links{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}.site-footer-v2 .footer-links section{display:grid;align-content:start;gap:7px}.site-footer-v2 .footer-links section>b{padding:0 4px 10px;color:var(--theme-text,#f5f7fa);font:800 9px "IBM Plex Mono",monospace;letter-spacing:.16em;text-transform:uppercase}.site-footer-v2 .footer-links a{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:66px;padding:10px 11px;border:1px solid var(--theme-line,rgba(255,255,255,.13));border-radius:10px;background:color-mix(in srgb,var(--theme-surface-2,#30343a) 72%,transparent);color:var(--theme-text,#f5f7fa)!important;text-decoration:none!important;transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .25s,background .25s}.site-footer-v2 .footer-links a:hover,.site-footer-v2 .footer-links a:focus-visible{transform:translateY(-3px);border-color:color-mix(in srgb,var(--theme-accent,#c53b48) 65%,white);background:color-mix(in srgb,var(--theme-accent,#c53b48) 12%,var(--theme-surface-2,#30343a));outline:none}.site-footer-v2 .footer-links .nav-icon,.footer-symbol{display:grid!important;place-items:center;width:34px!important;height:34px!important;padding:8px;border:1px solid var(--theme-line,rgba(255,255,255,.16));border-radius:8px;background:rgba(255,255,255,.05);color:var(--theme-accent,#c53b48);font:800 11px "IBM Plex Mono",monospace}.site-footer-v2 .footer-links a>span:nth-child(2){display:grid;gap:4px;font-size:10px;font-weight:800}.site-footer-v2 .footer-links a small{color:var(--theme-muted,#adb2b8);font-size:7px;font-weight:400}.site-footer-v2 .footer-links a>i{color:var(--theme-muted,#adb2b8);font-style:normal}.site-footer-v2 .footer-bottom{grid-column:1/-1}
+
+/* Click-controlled global colour themes. Graphite replaces pure black. */
+:root{--theme-bg:#1d2024;--theme-surface:#282d33;--theme-surface-2:#343a42;--theme-line:rgba(220,226,232,.18);--theme-text:#f1f3f5;--theme-muted:#aeb6bf;--theme-accent:#9aa7b4;--theme-accent-2:#5d6975}
+[data-max-theme="graphite"]{--theme-bg:#1d2024;--theme-surface:#282d33;--theme-surface-2:#343a42;--theme-line:rgba(220,226,232,.18);--theme-text:#f1f3f5;--theme-muted:#aeb6bf;--theme-accent:#9aa7b4;--theme-accent-2:#5d6975}
+[data-max-theme="titanium"]{--theme-bg:#272b30;--theme-surface:#343940;--theme-surface-2:#41474f;--theme-line:rgba(255,255,255,.19);--theme-text:#fbfbfa;--theme-muted:#c3c7ca;--theme-accent:#df7b3c;--theme-accent-2:#9c4d22}
+[data-max-theme="midnight"]{--theme-bg:#111923;--theme-surface:#182534;--theme-surface-2:#223448;--theme-line:rgba(145,194,237,.22);--theme-text:#f4f8fc;--theme-muted:#a7b8c8;--theme-accent:#4a9fe8;--theme-accent-2:#25679d}
+[data-max-theme="burgundy"]{--theme-bg:#21171a;--theme-surface:#302126;--theme-surface-2:#422c33;--theme-line:rgba(255,199,208,.18);--theme-text:#fff7f7;--theme-muted:#c8afb3;--theme-accent:#d64b60;--theme-accent-2:#8e2938}
+body{background:radial-gradient(circle at 78% 0,color-mix(in srgb,var(--theme-accent) 11%,transparent),transparent 34%),var(--theme-bg)!important;color:var(--theme-text)}
+.catalogue-route,.service-route,.car-section-route,.max3d-saved,.compare-v2,.location-page-v3,.location-detail-v3,.support-v2,.profile-page-v2,.dashboard-page,.page{background-color:transparent!important;color:var(--theme-text)!important}
+.catalogue-grid article,.catalogue-controls,.route-empty,.compare-workspace-v2 article,.location-card-list-v3 article,.location-form-grid,.location-filter-grid,.support-priority-grid article,.support-faq details,.profile-summary-v2 a,.profile-services-v2 a,.finance>div,.finance>aside{background-color:color-mix(in srgb,var(--theme-surface) 92%,transparent)!important;border-color:var(--theme-line)!important}
+.red,.catalogue-grid footer a.primary,.location-form-grid button,.route-empty button,.support-ticket-v2 button[type="submit"]{background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2))!important;border-color:var(--theme-accent)!important}
+.theme-control{position:relative}.theme-button{display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#fff}.theme-button:hover,.theme-button[aria-expanded="true"]{background:rgba(255,255,255,.1)}.theme-picker{position:absolute;z-index:1900;right:0;top:calc(100% + 12px);width:min(330px,calc(100vw - 24px));padding:12px;border:1px solid var(--theme-line);border-radius:14px;background:color-mix(in srgb,var(--theme-surface) 94%,transparent);box-shadow:0 24px 70px rgba(0,0,0,.48);backdrop-filter:blur(18px)}.theme-picker>header{position:static!important;display:grid!important;width:auto!important;height:auto!important;padding:6px 7px 12px!important;border:0!important;background:none!important;box-shadow:none!important}.theme-picker>header small{color:var(--theme-accent);font:8px "IBM Plex Mono",monospace;letter-spacing:.14em}.theme-picker>header b{margin-top:5px;font-size:15px}.theme-picker>button{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;width:100%;min-height:54px;padding:8px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--theme-text);text-align:left}.theme-picker>button:hover,.theme-picker>button.active{border-color:var(--theme-line);background:rgba(255,255,255,.055)}.theme-picker>button>i{width:22px;height:22px;border:3px solid #fff;border-radius:50%;background:#cf3443;box-shadow:0 0 0 1px #0008}.theme-picker>button.titanium>i{background:#df7b3c}.theme-picker>button.midnight>i{background:#4a9fe8}.theme-picker>button.burgundy>i{background:#d64b60}.theme-picker>button span{display:grid;gap:2px}.theme-picker>button span b{font-size:10px}.theme-picker>button span small{color:var(--theme-muted);font-size:7px}.theme-picker>button em{color:var(--theme-accent);font-size:7px;font-style:normal}
+
+@media(max-width:1050px){.route-stage~footer.site-footer-v2{grid-template-columns:1fr!important}.site-footer-v2 .footer-links{grid-template-columns:repeat(3,1fr)!important}}
+@media(max-width:760px){.compare-image-hero>div,.location-hero-v3>.location-hero-copy,.support-cinematic-hero>header{width:100%!important;padding:112px 18px 60px!important}.compare-image-hero h1,.location-hero-v3 h1,.support-cinematic-hero h1{font-size:52px!important}.compare-image-hero>figure:after,.location-image-hero:after,.support-hero-media:after{background:linear-gradient(0deg,var(--theme-bg) 0,rgba(14,16,19,.64) 58%,rgba(14,16,19,.15))}.location-image-features,.support-image-features{display:none}.compare-image-hero>div>dl{grid-template-columns:repeat(3,1fr)}.site-footer-v2 .footer-links{grid-template-columns:1fr!important}.site-footer-v2 .footer-links section:last-child{grid-column:auto}.theme-control{display:block}.theme-picker{position:fixed;top:74px;right:8px}.route-stage{background-attachment:scroll}}
+
+/* Apply the graphite theme to legacy page surfaces as well. */
+html{background:var(--theme-bg)!important}
+.mx-brand{position:relative;display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;margin-right:0;color:var(--theme-text);text-decoration:none;transition:transform .25s}.mx-brand:before,.mx-brand:after{content:"";position:absolute;inset:2px;border-radius:14px;background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2));opacity:.8;transition:transform .5s cubic-bezier(.16,1,.3,1)}.mx-brand:before{transform:rotate(12deg);z-index:-2}.mx-brand:after{transform:rotate(-12deg);z-index:-1;opacity:.65}.mx-brand span{position:relative;display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--theme-line);border-radius:11px;background:linear-gradient(145deg,var(--theme-surface-2),var(--theme-bg));font:900 17px/1 "Arial Narrow",Manrope,sans-serif;letter-spacing:-.1em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 8px 24px rgba(0,0,0,.22)}.mx-brand span:after{content:"";position:absolute;top:5px;right:5px;width:4px;height:4px;border-radius:50%;background:#86d6a2;box-shadow:-7px 0 0 var(--theme-accent),-14px 0 0 color-mix(in srgb,var(--theme-accent) 35%,transparent);animation:mxSignal 1.8s ease-in-out infinite}.mx-brand:hover,.mx-brand:focus-visible{transform:translateY(-2px)}.mx-brand:hover:before,.mx-brand:focus-visible:before{transform:rotate(45deg)}.mx-brand:hover:after,.mx-brand:focus-visible:after{transform:rotate(-45deg)}
+.global-nav.nav-v2 .logo{display:grid!important;gap:3px;min-width:max-content!important;padding-left:0!important;line-height:1}.global-nav.nav-v2 .logo:before{display:none!important}.global-nav.nav-v2 .logo small{color:var(--theme-muted);font:700 5px "IBM Plex Mono",monospace;letter-spacing:.16em;white-space:nowrap}
+.global-nav.nav-v2 .logo b{position:relative;font-family:"Arial Narrow",Manrope,sans-serif!important;font-size:16px!important;font-weight:900!important;letter-spacing:.2em!important;text-transform:uppercase;text-shadow:0 1px 10px rgba(255,255,255,.08)}.global-nav.nav-v2 .logo em{font-family:"IBM Plex Mono",monospace;font-size:.78em;letter-spacing:.08em}.global-nav.nav-v2 .logo b:after{content:"";display:inline-block;width:6px;height:6px;margin:0 0 2px 9px;border-radius:50%;background:#e11d2e;box-shadow:none;vertical-align:middle;animation:mxBubbles 2.2s ease-in-out infinite}.global-nav.nav-v2 .logo b:before{content:"";position:absolute;right:0;bottom:-7px;width:100%;height:1px;background:var(--theme-accent);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.16,1,.3,1)}.global-nav.nav-v2 .logo:hover b:before,.global-nav.nav-v2 .logo:focus-visible b:before{transform:scaleX(1)}
+.nav-symbol{position:relative;display:inline-grid;place-items:center}.nav-symbol:after{content:attr(data-tooltip);position:absolute;z-index:20;top:calc(100% + 10px);left:50%;padding:7px 9px;border:1px solid var(--theme-line);background:var(--theme-surface);color:var(--theme-text);font:700 8px "IBM Plex Mono",monospace;letter-spacing:.05em;white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,-4px);transition:opacity .2s,transform .2s}.global-nav>nav>a:hover .nav-symbol:after,.global-nav>nav>a:focus-visible .nav-symbol:after{opacity:1;transform:translate(-50%,0)}
+@keyframes mxSignal{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}@keyframes mxBubbles{0%,100%{opacity:.35;transform:translateX(0)}50%{opacity:1;transform:translateX(2px)}}
+@media(prefers-reduced-motion:reduce){.mx-brand:after,.global-nav.nav-v2 .logo b:after{animation:none;opacity:1}}
+
+/* Refined automotive monogram lockup. */
+.mx-brand{display:grid!important;place-items:center;width:50px;height:42px;flex:0 0 50px;margin-right:0;border:1px solid rgba(220,226,232,.34);border-radius:10px;background:linear-gradient(145deg,#3b434c,#20252a);box-shadow:inset 0 1px rgba(255,255,255,.14),0 8px 22px rgba(0,0,0,.2);transform:none!important;overflow:hidden}
+.mx-brand:before{content:"";position:absolute;inset:-22px auto -22px 22px;width:5px;background:var(--theme-accent);transform:rotate(28deg);opacity:.9;z-index:0;transition:transform .3s,opacity .3s}
+.mx-brand:after{content:"";position:absolute;top:6px;right:6px;width:4px;height:4px;border-radius:50%;background:#9fe0b2;box-shadow:0 0 0 3px rgba(159,224,178,.12);animation:mxSignal 1.8s ease-in-out infinite;z-index:2}
+.mx-brand span{position:relative;z-index:1;display:block;width:auto;height:auto;border:0;border-radius:0;background:none;box-shadow:none;font:900 italic 18px/1 "Arial Narrow",Manrope,sans-serif;letter-spacing:-.12em;transform:none!important}
+.mx-brand span:after{display:none}
+.mx-brand:hover,.mx-brand:focus-visible{background:linear-gradient(145deg,#46515c,#272d33);transform:translateY(-2px)!important}.mx-brand:hover:before,.mx-brand:focus-visible:before{transform:rotate(28deg) translateX(6px);opacity:1}
+.global-nav.nav-v2 .logo{gap:4px!important}.global-nav.nav-v2 .logo b{letter-spacing:.16em!important}.global-nav.nav-v2 .logo small{letter-spacing:.18em!important}
+.global-nav.nav-v2 .profile{display:block!important;position:relative!important}
+.global-nav.nav-v2 .profile:hover .profile-dropdown,.global-nav.nav-v2 .profile:focus-within .profile-dropdown{visibility:visible;opacity:1;pointer-events:auto;transform:none}
+.global-nav.nav-v2 .profile>a:before{display:none!important}
+.mx-brand{background:rgba(145,161,177,.16)!important;border-color:rgba(220,226,232,.38)!important;backdrop-filter:blur(10px) saturate(125%);box-shadow:inset 0 1px rgba(255,255,255,.16),0 8px 22px rgba(0,0,0,.14)}.mx-brand span{color:#e11d2e!important}.mx-brand:hover,.mx-brand:focus-visible{background:rgba(176,192,207,.26)!important;border-color:rgba(255,255,255,.58)!important}
+.m8-hero{min-height:100svh!important}
+@media(max-height:600px) and (min-width:681px){.m8-hero{min-height:620px!important}.m8-copy{bottom:150px}.m8-specs{bottom:38px}.m8-copy h1{font-size:clamp(54px,7vw,82px)}}
+.mx-brand:before{inset:auto auto auto 7px;width:4px;height:4px;border-radius:50%;background:#e11d2e;opacity:1;transform:none;animation:mxSignal 1.8s ease-in-out infinite .35s}.mx-brand:after{inset:auto 7px auto auto;width:4px;height:4px;border-radius:50%;background:#9fe0b2;opacity:1;transform:none;animation:mxSignal 1.8s ease-in-out infinite}.mx-brand:hover:before,.mx-brand:focus-visible:before,.mx-brand:hover:after,.mx-brand:focus-visible:after{transform:scale(1.15)}
+.route-stage,.bmw-stories,.bmw-offer>div,.explorer-page,.compare-v2,.profile-dashboard-v2,.location-v2,.support-v2,.location-page-v3,.location-detail-v3,.auth-page,.sell-page,.my-listings,.sell-complete,.catalogue-route,.service-route,.car-section-route,.max3d-saved{background-color:var(--theme-bg)!important;color:var(--theme-text)!important}
+.bmw-stories article>div,.bmw-offer>div,.bmw-media-journal-copy,.bmw-ownership-hub,.compare-workspace-v2,.catalogue-controls,.route-empty,.service-route form,.profile-overview,.profile-garage,.profile-summary-v2 a,.profile-content-v2,.location-filter-grid,.location-form-grid,.support-priority-grid article,.support-faq details,.authcard,.sell-workspace>aside,.sell-workspace>form{background-color:var(--theme-surface)!important;color:var(--theme-text)!important;border-color:var(--theme-line)!important}
+.bmw-offer aside,.red,.catalogue-grid footer a.primary,.location-form-grid button,.route-empty button,.support-ticket-v2 button[type="submit"]{background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2))!important;border-color:var(--theme-accent)!important}
+.bmw-model-nav,.bmw-newsletter,.bmw-range,.bmw-find{background-color:color-mix(in srgb,var(--theme-surface) 88%,white)!important;color:var(--theme-text)!important}
+.bmw-model-nav a,.bmw-newsletter a,.bmw-range>header>a{color:var(--theme-text)!important}
+.bmw-model-card,.comparecars article,.catalogue-grid article,.location-card-list-v3 article,.dealers article,.guides article{background-color:var(--theme-surface-2)!important;border-color:var(--theme-line)!important;color:var(--theme-text)!important}
+.bmw-model-card>a,.bmw-model-card h3,.bmw-model-card p,.bmw-model-card> a>div span{color:var(--theme-text)!important}

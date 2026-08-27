@@ -1,0 +1,563 @@
+.vehicle-detail-v2 {
+  min-height: 100vh;
+  padding: 118px clamp(18px, 5vw, 78px) 110px;
+  background: #070809;
+  color: #f5f7fa;
+}
+.vd-title {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  align-items: center;
+  gap: 10px;
+  max-width: 1500px;
+  margin: 0 auto 30px;
+}
+.vd-title a,
+.vd-title span,
+.vd-title b {
+  color: #8f969f;
+  font:
+    8px "IBM Plex Mono",
+    monospace;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.vd-title small {
+  justify-self: end;
+  color: #9ba3ae;
+  font-size: 9px;
+}
+.vd-title h1 {
+  grid-column: 1/-1;
+  margin: 18px 0 0;
+  font-size: clamp(48px, 7vw, 98px);
+  font-weight: 300;
+  letter-spacing: -0.065em;
+  line-height: 0.9;
+}
+.vd-title p {
+  grid-column: 1/-1;
+  margin: 4px 0;
+  color: #a5acb4;
+}
+.vd-gallery {
+  max-width: 1500px;
+  margin: auto;
+}
+.vd-main {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 16/8.2;
+  overflow: hidden;
+  border: 1px solid #31363d;
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 40%, #242a31, #0c0f12 65%);
+}
+.vd-main > .vehicle-image-shell {
+  width: 100%;
+  height: 100%;
+}
+.vd-main .vehicle-image-shell > img {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.25s ease;
+  user-select: none;
+}
+.vd-angle {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  padding: 9px 12px;
+  border: 1px solid #ffffff33;
+  background: #080a0dcc;
+  color: white;
+  font:
+    8px "IBM Plex Mono",
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.vd-prev,
+.vd-next {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  width: 48px;
+  height: 58px;
+  border: 1px solid #ffffff33;
+  background: #080a0dcc;
+  color: white;
+  font-size: 30px;
+  transform: translateY(-50%);
+}
+.vd-prev {
+  left: 14px;
+}
+.vd-next {
+  right: 14px;
+}
+.vd-image-tools {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  gap: 7px;
+}
+.vd-image-tools button,
+.vd-gallery > footer button {
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid #ffffff44;
+  background: #080a0dd9;
+  color: white;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+.vd-missing {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 230px;
+  background: linear-gradient(145deg, #171b20, #0c0e11);
+  color: #bec4cb;
+  text-align: center;
+}
+.vd-missing img {
+  width: 88px;
+  height: 65px;
+  opacity: 0.45;
+}
+.vd-missing strong {
+  margin-top: 12px;
+  color: #f4f6f8;
+  font-size: 20px;
+}
+.vd-missing span {
+  margin-top: 7px;
+}
+.vd-missing small {
+  margin-top: 8px;
+  color: #707984;
+  font: 8px monospace;
+  text-transform: uppercase;
+}
+.vd-thumbs {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 9px;
+}
+.vd-thumbs button {
+  position: relative;
+  min-height: 104px;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #30363e;
+  background: #101318;
+  color: #8e97a1;
+}
+.vd-thumbs button.active {
+  border-color: #e12b38;
+  box-shadow: 0 0 0 1px #e12b38;
+}
+.vd-thumbs .vehicle-image-shell {
+  width: 100%;
+  height: 100%;
+  min-height: 104px;
+}
+.vd-thumbs .vehicle-image-shell > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.vd-thumbs > button > span:not(.vehicle-image-shell) {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 15px;
+  color: #6f7780;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+.vd-thumbs b {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 7px;
+  background: #07090cdd;
+  color: white;
+  font-size: 8px;
+}
+.vd-gallery > footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  color: #808892;
+  font-size: 9px;
+}
+.vd-lightbox {
+  position: fixed;
+  z-index: 3000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 40px;
+  background: #030405f5;
+}
+.vd-lightbox-stage {
+  display: grid;
+  place-items: center;
+  width: min(1400px, 90vw);
+  height: 82vh;
+  overflow: hidden;
+}
+.vd-lightbox-stage > .vehicle-image-shell {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+.vd-lightbox-stage .vehicle-image-shell > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s;
+}
+.vd-close {
+  position: absolute;
+  z-index: 3;
+  right: 24px;
+  top: 20px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #ffffff55;
+  background: #0a0c0f;
+  color: white;
+  font-size: 30px;
+}
+.vd-lightbox-tools {
+  position: absolute;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: white;
+}
+.vd-lightbox-tools button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ffffff55;
+  background: #101318;
+  color: white;
+  font-size: 22px;
+}
+.vd-lightbox-tools b {
+  font: 9px monospace;
+  text-transform: uppercase;
+}
+.vd-purchase {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1fr;
+  gap: 12px;
+  max-width: 1500px;
+  margin: 32px auto 80px;
+}
+.vd-summary,
+.vd-selectors,
+.vd-actions {
+  padding: 28px;
+  border: 1px solid #30363e;
+  background: #101318;
+}
+.vd-summary > small,
+.vd-specs header small,
+.vd-features small {
+  color: #e33b47;
+  font:
+    8px "IBM Plex Mono",
+    monospace;
+  letter-spacing: 0.14em;
+}
+.vd-summary > strong {
+  display: block;
+  margin: 8px 0;
+  font-size: 42px;
+  font-weight: 400;
+}
+.vd-summary > span {
+  color: #aab1b9;
+}
+.vd-summary > p {
+  color: #7f8790;
+  font-size: 9px;
+  line-height: 1.6;
+}
+.vd-summary dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin: 24px 0 0;
+  background: #2b3037;
+}
+.vd-summary dl div {
+  padding: 12px;
+  background: #0c0f12;
+}
+.vd-summary dt {
+  color: #7f8790;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+.vd-summary dd {
+  margin: 5px 0 0;
+  color: white;
+  font-size: 13px;
+}
+.vd-selectors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-content: start;
+  gap: 12px;
+}
+.vd-selectors label {
+  color: #8f979f;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+.vd-selectors select {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 7px;
+  padding: 0 10px;
+  border: 1px solid #353b43;
+  background: #090b0e;
+  color: white;
+}
+.vd-selectors label:nth-last-of-type(1),
+.vd-selectors > small {
+  grid-column: 1/-1;
+}
+.vd-selectors > small {
+  color: #7d858e;
+}
+.vd-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.vd-actions a,
+.vd-actions button {
+  display: flex;
+  min-width: 0;
+  min-height: 54px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 13px;
+  border: 1px solid #3a4149;
+  background: #15191e;
+  color: #f4f6f8;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+}
+.vd-actions svg {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+}
+.vd-actions a:hover,
+.vd-actions button:hover,
+.vd-actions a:focus-visible,
+.vd-actions button:focus-visible {
+  border-color: #e13b46;
+  background: #271116;
+}
+.vd-actions .primary {
+  grid-column: 1/-1;
+  justify-content: center;
+  background: #d92735;
+  border-color: #d92735;
+  font-size: 10px;
+}
+.vd-actions .selected {
+  border-color: #e13b46;
+  background: #351218;
+}
+.vd-specs {
+  display: grid;
+  grid-template-columns: 0.65fr 1.35fr;
+  gap: 50px;
+  max-width: 1500px;
+  margin: 0 auto 80px;
+}
+.vd-specs header h2 {
+  margin: 12px 0;
+  font-size: clamp(38px, 5vw, 68px);
+  font-weight: 300;
+  letter-spacing: -0.05em;
+}
+.vd-specs header p {
+  color: #8b939c;
+  line-height: 1.7;
+}
+.vd-specs dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0;
+  border-top: 1px solid #30363e;
+}
+.vd-specs dl div {
+  padding: 15px 10px;
+  border-bottom: 1px solid #30363e;
+}
+.vd-specs dt {
+  color: #7f8790;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+.vd-specs dd {
+  margin: 6px 0 0;
+  color: #edf1f5;
+}
+.vd-specs dd.unavailable {
+  color: #7c838b;
+}
+.vd-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.65fr;
+  gap: 12px;
+  max-width: 1500px;
+  margin: auto;
+}
+.vd-features article {
+  padding: 32px;
+  border: 1px solid #30363e;
+  background: #0f1216;
+}
+.vd-features h2 {
+  font-size: 30px;
+  font-weight: 400;
+}
+.vd-features ul {
+  padding-left: 20px;
+  color: #a4abb3;
+  line-height: 1.8;
+}
+.vd-ratings h2 {
+  margin: 10px 0;
+  font-size: 60px;
+}
+.vd-ratings p,
+.vd-ratings b {
+  color: #8e969e;
+}
+.vd-source {
+  max-width: 1500px;
+  margin: 25px auto 0;
+  padding: 18px;
+  border-top: 1px solid #30363e;
+  color: #747d86;
+  font-size: 9px;
+}
+.vd-source a {
+  color: #d9dfe5;
+}
+@media (max-width: 1100px) {
+  .vd-thumbs {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .vd-purchase {
+    grid-template-columns: 1fr 1fr;
+  }
+  .vd-actions {
+    grid-column: 1/-1;
+  }
+  .vd-specs {
+    grid-template-columns: 1fr;
+  }
+  .vd-features {
+    grid-template-columns: 1fr 1fr;
+  }
+  .vd-ratings {
+    grid-column: 1/-1;
+  }
+}
+@media (max-width: 700px) {
+  .vehicle-detail-v2 {
+    padding: 100px 13px 85px;
+  }
+  .vd-title {
+    grid-template-columns: auto auto auto 1fr;
+  }
+  .vd-title small {
+    grid-column: 1/-1;
+    justify-self: start;
+  }
+  .vd-main {
+    aspect-ratio: 4/3;
+  }
+  .vd-image-tools {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .vd-image-tools button {
+    padding: 0 6px;
+  }
+  .vd-thumbs {
+    display: flex;
+    overflow-x: auto;
+  }
+  .vd-thumbs button {
+    flex: 0 0 135px;
+  }
+  .vd-purchase {
+    grid-template-columns: 1fr;
+  }
+  .vd-actions {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+  .vd-actions .primary {
+    grid-column: auto;
+  }
+  .vd-selectors {
+    grid-template-columns: 1fr;
+  }
+  .vd-selectors label:nth-last-of-type(1),
+  .vd-selectors > small {
+    grid-column: auto;
+  }
+  .vd-specs dl {
+    grid-template-columns: 1fr;
+  }
+  .vd-features {
+    grid-template-columns: 1fr;
+  }
+  .vd-ratings {
+    grid-column: auto;
+  }
+  .vd-lightbox {
+    padding: 12px;
+  }
+  .vd-lightbox-stage {
+    width: 100%;
+    height: 75vh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vd-main .vehicle-image-shell > img,
+  .vd-lightbox-stage .vehicle-image-shell > img {
+    transition: none;
+  }
+}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 92" role="img" aria-labelledby="title desc">
+  <title id="title">MAX CARS MC velocity emblem</title>
+  <desc id="desc">Original MC monogram with a precise grand touring roofline and red velocity accent</desc>
+  <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset=".34" stop-color="#aab2bd"/><stop offset=".58" stop-color="#f6f8fb"/><stop offset="1" stop-color="#69727d"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#7e0915"/><stop offset=".52" stop-color="#ef233c"/><stop offset="1" stop-color="#a80f1e"/></linearGradient>
+  </defs>
+  <path d="M17 34C41 33 53 28 71 16 79 10 89 7 102 7h58c15 0 28 4 40 13l18 13 25 3" fill="none" stroke="url(#metal)" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M71 17h84c14 0 24 3 35 11H57c5-3 9-7 14-11Z" fill="none" stroke="url(#accent)" stroke-width="1.8"/>
+  <path d="M24 38h210" stroke="#858e99" stroke-width="1" opacity=".7"/>
+  <path d="M18 78 30 47h17l16 17 16-17h18L86 78H69l7-18-12 14h-5L46 60l-7 18Zm91-31h56c24 0 42 9 52 26l-18 5c-8-11-20-16-37-16h-31l-3 7h34c12 0 22-2 31-7l10 11c-12 7-27 10-45 10h-41Z" fill="url(#metal)"/>
+  <path d="M18 84h190l34-11-24 16H18Z" fill="url(#accent)"/>
+</svg>

@@ -1,0 +1,1 @@
+export default function NotFound(){return <section className="page"><div className="empty"><p className="eyebrow">404 / ROAD NOT FOUND</p><h1>This route left the map.</h1><p>Return to the showroom or explore verified inventory.</p><a className="red" href="/cars">Explore cars →</a></div></section>}

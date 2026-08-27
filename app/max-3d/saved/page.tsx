@@ -1,0 +1,4 @@
+"use client";
+import {useEffect,useState} from "react";
+type Saved={id:string;slug:string;paint:string;wheel:string;interior:string;total:number;created:string};
+export default function Page(){const [items,setItems]=useState<Saved[]>([]);useEffect(()=>setItems(JSON.parse(localStorage.getItem("max-3d-configs")||"[]")),[]);return <main className="max3d-saved"><small>MAX 3D / SAVED CONFIGURATIONS</small><h1>Your digital garage.</h1><p>Open a saved build, continue configuring it or share it with a dealer.</p>{items.length?<div>{items.map(x=><article key={x.id}><span>{x.id}</span><h2>{x.slug.replaceAll("-"," ")}</h2><p>{x.paint} · {x.wheel} · {x.interior}</p><b>₹{x.total.toLocaleString("en-IN")}</b><a href={`/max-3d/configurator/${x.slug}`}>Open configuration →</a></article>)}</div>:<section><h2>No saved configurations yet.</h2><p>Build a vehicle in MAX 3D and select Save Configuration.</p><a href="/max-3d/showroom">Launch showroom →</a></section>}</main>}

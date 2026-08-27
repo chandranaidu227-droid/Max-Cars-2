@@ -1,0 +1,1 @@
+"use client";import {useEffect} from "react";export default function ReturnRedirect(){useEffect(()=>{const target=localStorage.getItem("max-return");if(target&&localStorage.getItem("max-session")){localStorage.removeItem("max-return");location.replace(target)}},[]);return null}

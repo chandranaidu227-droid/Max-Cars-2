@@ -1,0 +1,1 @@
+import {CarSection} from "../../../RouteTemplates";export default async function Page({params}:{params:Promise<{slug:string;section:string}>}){const p=await params;return <CarSection slug={p.slug} section={p.section}/>}

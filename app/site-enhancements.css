@@ -1,0 +1,271 @@
+/* Final MAX CARS production refinements: media reliability, cinematic discovery and service tools. */
+.nav-v2 .logo > img,
+footer .logo > img {
+  width: 78px;
+  height: 54px;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 16px rgba(0, 0, 0, .55));
+}
+
+.nav-v2 .logo b { letter-spacing: .18em; }
+.global-nav.nav-v2.at-top { background: transparent !important; }
+.global-nav.nav-v2,
+.global-nav.nav-v2.at-top {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.global-nav.nav-v2.scrolled {
+  background: rgba(6, 7, 9, .9) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, .24) !important;
+}
+.global-nav.nav-v2::before,
+.global-nav.nav-v2::after { content: none !important; display: none !important; }
+
+/*
+ * globals.css still contains an early prototype rule targeting every <header>.
+ * Keep that legacy rule from turning section headings into fixed white navbar
+ * panels. The real site navigation lives outside .route-stage, so this reset is
+ * deliberately limited to page content.
+ */
+.route-stage header {
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+  z-index: auto !important;
+}
+
+.vd-specs > header h2 { line-height: .98 !important; }
+
+.global-nav.nav-v2 > nav { gap: 1px !important; }
+.global-nav.nav-v2 > nav > a { padding-inline: 8px !important; font-size: 8px !important; }
+.global-nav.nav-v2 .logo img { width: 72px !important; height: 46px !important; object-fit: contain; }
+.global-nav.nav-v2 .logo b { font-size: 10px; }
+@media (max-width: 1320px) {
+  .global-nav.nav-v2 > nav > a:nth-child(5) { display: none; }
+}
+
+.vd-specs > header,
+.brand-discovery > header,
+.sell-workspace form > header,
+.support-v2 > header,
+.my-listings > header {
+  display: block !important;
+  align-items: initial !important;
+  gap: 0 !important;
+}
+
+.inventory-tools > header,
+.bmw-range > header,
+.location-search-v3 > header,
+.location-discovery-v3 > header,
+.location-card-body > header,
+.location-list article > header,
+.car-brand-line {
+  display: flex !important;
+}
+
+.vehicle-image-shell > img {
+  position: relative;
+  z-index: 2;
+}
+.vehicle-image-skeleton {
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Explore now opens with the same full-bleed cinematic language as Home. */
+.explore-hero {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+.explore-film {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+}
+.explore-film::after { display: none; }
+.explore-film video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.explore-copy {
+  align-self: end;
+  width: min(680px, 92vw);
+  padding: 0 0 clamp(44px, 8vh, 92px) clamp(18px, 5vw, 76px);
+  background: transparent;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .72);
+}
+.explore-copy h1 { font-size: clamp(58px, 7vw, 108px); }
+.explore-copy > p { color: #f0f2f4; }
+.explore-copy label { width: min(520px, 100%); }
+.explore-copy input {
+  min-height: 52px;
+  border: 1px solid rgba(255, 255, 255, .65) !important;
+  background: rgba(6, 8, 11, .56) !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+.explore-copy nav > * {
+  min-height: 44px;
+  border-color: rgba(255, 255, 255, .68);
+  background: rgba(5, 7, 9, .38);
+  backdrop-filter: none;
+}
+.explore-copy nav button { background: #d92735; }
+.brand-discovery { padding-top: 120px; }
+.explorer-car figure > .vehicle-image-shell img { object-fit: contain !important; }
+.explorer-car .car-actions button { cursor: pointer; }
+
+/* Vehicle titles stay in the content safe area and never collide with navigation. */
+.vehicle-detail-v2 { padding-top: 124px; overflow: clip; }
+.vehicle-detail-v2 > .vd-title,
+.support-v2 > header,
+.location-search-v3 > header,
+.location-discovery-v3 > header {
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+  overflow: visible !important;
+}
+.vehicle-detail-v2 > .vd-title {
+  position: relative !important;
+  z-index: 1;
+  display: grid !important;
+  min-height: 190px !important;
+  align-content: start;
+  margin-bottom: 36px !important;
+}
+.vd-title h1 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(46px, 6.4vw, 94px);
+  line-height: .96;
+}
+.vd-gallery { position: relative; z-index: 2; }
+.vd-main .vehicle-image-shell > img { object-fit: contain; background: #0b0e12; }
+.vd-thumbs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: #434b55 #101318;
+}
+.vd-thumbs button { flex: 0 0 clamp(148px, 16vw, 235px); scroll-snap-align: start; }
+.vd-gallery > footer span::after {
+  content: " · Only exact, verified media is shown";
+  color: #aeb6bf;
+}
+
+.location-service-rail {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  max-width: 1540px;
+  margin: -20px auto 0;
+  padding: 0 clamp(18px, 4vw, 64px);
+  position: relative;
+  z-index: 2;
+}
+.location-service-rail article {
+  min-height: 150px;
+  padding: 24px;
+  border: 1px solid #303943;
+  border-right: 0;
+  background: #0d1116;
+}
+.location-service-rail article:last-child { border-right: 1px solid #303943; }
+.location-service-rail b { display: block; color: #e23a46; font: 9px "IBM Plex Mono", monospace; }
+.location-service-rail span { display: block; margin-top: 26px; color: #f4f6f8; font-size: 15px; font-weight: 700; }
+.location-service-rail small { display: block; margin-top: 7px; color: #7f8994; line-height: 1.5; }
+
+.support-priority-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 1300px;
+  margin: 0 auto 70px;
+  gap: 10px;
+}
+.support-priority-grid article {
+  min-height: 260px;
+  padding: 28px;
+  border: 1px solid #303943;
+  background: linear-gradient(145deg, #151a20, #0b0e12);
+}
+.support-priority-grid article > b { color: #e23a46; font: 9px "IBM Plex Mono", monospace; }
+.support-priority-grid h2 { margin: 34px 0 10px; font-size: 24px; font-weight: 500; }
+.support-priority-grid p { min-height: 58px; color: #8f99a3; line-height: 1.6; }
+.support-priority-grid button,
+.support-priority-grid a {
+  display: inline-grid;
+  place-items: center;
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid #46515d;
+  background: #121820;
+  color: #f5f7fa;
+  font-size: 9px;
+  text-decoration: none;
+}
+.support-priority-grid button:hover,
+.support-priority-grid a:hover { border-color: #e23a46; background: #281116; }
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid #ff5964 !important;
+  outline-offset: 3px;
+}
+
+@media (max-width: 1000px) {
+  .explore-hero { min-height: 92svh; }
+  .explore-film { height: 100%; min-height: 0; }
+  .explore-copy { padding: 0 5vw 62px; }
+  .location-service-rail { grid-template-columns: repeat(2, 1fr); margin-top: 18px; }
+  .location-service-rail article { border-right: 1px solid #303943; }
+  .support-priority-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 680px) {
+  .nav-v2 .logo > img { width: 66px; height: 44px; }
+  .explore-hero { min-height: 88svh; padding-top: 0; }
+  .explore-copy { padding: 0 16px 44px; }
+  .explore-copy h1 { font-size: clamp(48px, 14vw, 68px); }
+  .explore-copy label { margin-top: 20px; }
+  .explore-copy nav { display: grid; grid-template-columns: 1fr 1fr; }
+  .vehicle-detail-v2 { padding-top: 92px; }
+  .vd-title h1 { font-size: clamp(43px, 13vw, 64px); }
+  .vd-main { aspect-ratio: 4 / 3; }
+  .vd-thumbs button { flex-basis: 142px; }
+  .location-service-rail,
+  .support-priority-grid { grid-template-columns: 1fr; padding-inline: 14px; }
+  .location-service-rail article,
+  .support-priority-grid article { min-height: 0; }
+  .location-service-rail span { margin-top: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vd-thumbs { scroll-behavior: auto; }
+}

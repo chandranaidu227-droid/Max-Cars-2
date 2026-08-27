@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="t d">
+  <title id="t">MAX CARS verified media pending</title>
+  <desc id="d">Branded placeholder used when an exact vehicle image has not been verified.</desc>
+  <defs>
+    <radialGradient id="g" cx="50%" cy="42%" r="70%"><stop offset="0" stop-color="#20262d"/><stop offset="1" stop-color="#090b0e"/></radialGradient>
+    <linearGradient id="m" x1="0" x2="1"><stop stop-color="#f5f7fa"/><stop offset=".52" stop-color="#8d959e"/><stop offset="1" stop-color="#f5f7fa"/></linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#g)"/>
+  <path d="M0 790 1600 570v430H0z" fill="#0d1014"/>
+  <path d="M80 820 1520 620" stroke="#e10600" stroke-width="3" opacity=".5"/>
+  <g transform="translate(800 430)" text-anchor="middle">
+    <text y="0" fill="url(#m)" font-family="Arial,Helvetica,sans-serif" font-size="150" font-weight="800" letter-spacing="-12">MC</text>
+    <rect x="-150" y="44" width="300" height="4" fill="#e10600"/>
+    <text y="105" fill="#f5f7fa" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="700" letter-spacing="12">MAX CARS</text>
+    <text y="165" fill="#858e98" font-family="Arial,Helvetica,sans-serif" font-size="18" letter-spacing="5">EXACT MEDIA VERIFICATION IN PROGRESS</text>
+  </g>
+</svg>

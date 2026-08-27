@@ -1,0 +1,19 @@
+/* Keep Explore Cars fully obsidian during click, focus, dropdown and loading states. */
+.explorer-page{color-scheme:dark;background:#080808!important}
+.explorer-page button,.explorer-page a,.explorer-page input,.explorer-page select{-webkit-tap-highlight-color:transparent}
+.explorer-page select,.explorer-page option,.explorer-page optgroup{background:#0d1014!important;color:#f5f7fa!important}
+.explorer-page input:-webkit-autofill,.explorer-page input:-webkit-autofill:hover,.explorer-page input:-webkit-autofill:focus{-webkit-text-fill-color:#f5f7fa;box-shadow:0 0 0 1000px #0d1014 inset!important;caret-color:#fff}
+.explorer-page button:focus,.explorer-page a:focus,.explorer-page input:focus,.explorer-page select:focus{outline:none}
+.explorer-page button:focus-visible,.explorer-page a:focus-visible,.explorer-page input:focus-visible,.explorer-page select:focus-visible{outline:2px solid #ff4b55!important;outline-offset:3px!important;box-shadow:none}
+.explorer-page button:active,.explorer-page a:active{filter:none;background-color:inherit;color:inherit}
+.brand-card-main:focus,.brand-card-main:active{background:linear-gradient(155deg,#171b20,#0c0f12)!important;color:#fff!important}
+.brand-search-row button:focus,.brand-search-row button:active,.brand-tabs button:focus,.brand-tabs button:active,.filter-meta button:focus,.filter-meta button:active,.view-switch button:focus,.view-switch button:active{background:#13171c!important;color:#f5f7fa!important}
+.brand-search-row button.active,.brand-tabs button.active,.view-switch button.active{background:#dce8f214!important;color:#fff!important}
+.explorer-car .car-actions a:focus,.explorer-car .car-actions a:active,.explorer-car .car-actions button:focus,.explorer-car .car-actions button:active{background:#171b21!important;color:#f5f7fa!important}
+.explorer-car .car-actions a:first-child:focus,.explorer-car .car-actions a:first-child:active{background:#e23a46!important;color:#fff!important}
+.quick-modal,.quick-modal article,.search-suggestions,.explorer-empty{color-scheme:dark}
+.quick-modal article{background:#111214!important;color:#f5f7fa!important}
+.quick-modal button:focus,.quick-modal button:active{background:#181b20!important;color:#fff!important}
+.vehicle-image-shell,.vehicle-image-skeleton,.vehicle-image-fallback{color-scheme:dark}
+.explorer-page .vehicle-image-shell img{background-color:transparent!important}
+@media(max-width:680px){.explorer-page select{appearance:auto}.explorer-page button:focus-visible,.explorer-page a:focus-visible{outline-offset:1px!important}}
