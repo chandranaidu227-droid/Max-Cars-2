@@ -1,14 +1,7 @@
 "use client";
 import {useEffect} from "react";
 
-const publicPrefixes=[
-  "/cars","/car","/explore","/search","/max-3d","/compare","/sell",
-  "/sell-your-car","/location","/locations","/dealer","/dealers","/support",
-  "/contact","/finance","/insurance","/book-test-drive","/request-quote",
-  "/buy-online","/brands","/budget","/offers","/new-cars","/used-cars",
-  "/upcoming-cars","/recently-launched","/guides","/login","/signup",
-  "/forgot-password",
-];
+const publicPrefixes=["/login","/signup","/forgot-password"];
 
 export default function SessionGuard({children}:{children:React.ReactNode}){
   useEffect(()=>{

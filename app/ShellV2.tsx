@@ -118,7 +118,6 @@ const links = [
   { n: "Compare", h: "/compare", i: "compare" },
   { n: "Electric", h: "/cars/electric", i: "electric" },
   { n: "Sell Your Car", h: "/sell", i: "sell" },
-  { n: "Location", h: "/location", i: "location" },
   { n: "Support", h: "/support", i: "support" },
 ] as const;
 const bottomLinks=[...links.filter(x=>["Home","Explore Cars","MAX 3D"].includes(x.n)),{n:"Saved",h:"/favourites",i:"heart" as IconName}];
@@ -137,12 +136,13 @@ function routeTheme(path:string){
 }
 export default function ShellV2({ children }: { children: React.ReactNode }) {
   const [signed, setSigned] = useState(false),
+    [sessionReady, setSessionReady] = useState(false),
     [name, setName] = useState("Driver"),
     [favs, setFavs] = useState(0),
     [mobile, setMobile] = useState(false),
     [searchOpen, setSearchOpen] = useState(false),
     [themeOpen, setThemeOpen] = useState(false),
-    [theme, setTheme] = useState("graphite"),
+    [theme, setTheme] = useState("titanium"),
     [searchQuery, setSearchQuery] = useState(""),
     [scrolled, setScrolled] = useState(false),
     [path, setPath] = useState("/");
@@ -154,31 +154,36 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
         setName(s?.name || "Driver");
         setFavs(JSON.parse(localStorage.getItem("max-favs") || "[]").length);
       } catch {}
+      setSessionReady(true);
     };
     sync();
     setPath(location.pathname);
     const onScroll = () => setScrolled(scrollY > 24);
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {setSearchOpen(false);setThemeOpen(false)}
+      if (e.key === "Escape") {setSearchOpen(false);setThemeOpen(false);setMobile(false)}
     };
     const onPointer = (e:MouseEvent) => {
       if(!(e.target as Element)?.closest?.(".theme-control")) setThemeOpen(false);
     };
-    const savedTheme=localStorage.getItem("max-theme");
-    const initialTheme=savedTheme==="titanium"?"graphite":savedTheme||"graphite";
+    const allowedThemes=["titanium","midnight","ivory","electric","track"];
+    const savedTheme=localStorage.getItem("max-theme")||"titanium";
+    const initialTheme=allowedThemes.includes(savedTheme)?savedTheme:"titanium";
     setTheme(initialTheme);
     document.documentElement.dataset.maxTheme=initialTheme;
     onScroll();
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("keydown", onKey);
     addEventListener("mousedown", onPointer);
+    const syncTheme=(event:StorageEvent)=>{if(event.key==="max-theme"&&event.newValue&&allowedThemes.includes(event.newValue)){setTheme(event.newValue);document.documentElement.dataset.maxTheme=event.newValue}};
     addEventListener("storage", sync);
+    addEventListener("storage", syncTheme);
     addEventListener("max-state", sync);
     return () => {
       removeEventListener("scroll", onScroll);
       removeEventListener("keydown", onKey);
       removeEventListener("mousedown", onPointer);
       removeEventListener("storage", sync);
+      removeEventListener("storage", syncTheme);
       removeEventListener("max-state", sync);
     };
   }, []);
@@ -186,6 +191,7 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
     setTheme(value);
     localStorage.setItem("max-theme",value);
     document.documentElement.setAttribute("data-max-theme",value);
+    try{const session=JSON.parse(localStorage.getItem("max-session")||"null");if(session)localStorage.setItem("max-user-theme",value)}catch{}
     setThemeOpen(false);
   };
   useEffect(() => {
@@ -194,23 +200,32 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
       document.body.style.overflow = "";
     };
   }, [mobile, searchOpen]);
-  const go = (h: string, locked?: boolean) =>
-    locked && !signed ? `/login?returnTo=${encodeURIComponent(h)}` : h;
+  const go = (h: string) =>
+    !signed && h !== "/" ? `/login?returnTo=${encodeURIComponent(h)}` : h;
   const suggestions = cars
     .filter(
       (c) =>
-        !searchQuery ||
+        !searchQuery.trim() ||
         `${c.brand} ${c.model} ${c.variant}`
           .toLowerCase()
-          .includes(searchQuery.toLowerCase()),
+          .includes(searchQuery.trim().toLowerCase()),
     )
     .slice(0, 6);
+  const submitSearch=(event:React.KeyboardEvent<HTMLInputElement>)=>{
+    if(event.key!=="Enter")return;
+    event.preventDefault();
+    const query=searchQuery.trim();
+    location.assign(`/cars${query?`?q=${encodeURIComponent(query)}`:""}`);
+  };
+  const isAuthRoute = ["/login", "/signup", "/forgot-password"].includes(path);
+  const showHeader = sessionReady && !isAuthRoute;
+  const showMemberChrome = showHeader && signed;
+  const showFooter = showHeader && (signed || path === "/");
   return (
     <>
-      <header
+      {showHeader && <header
         className={`global-nav nav-v2 ${scrolled ? "scrolled" : "at-top"}`}
       >
-        <a className="mx-brand" href="/" aria-label="MX CARS home"><span>MX</span></a>
         <a className="logo" href="/">
           <b>
             MAX <em>CARS</em>
@@ -222,6 +237,8 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
             <a
               className={(x.h === "/" ? path === "/" : path.startsWith(x.h)) ? "active" : ""}
               href={go(x.h)}
+              aria-current={(x.h === "/" ? path === "/" : path.startsWith(x.h)) ? "page" : undefined}
+              title={`Open ${x.n}`}
               key={x.n}
             >
               <span className="nav-symbol" data-tooltip={x.n}><Icon name={x.i} /></span>
@@ -231,14 +248,14 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="tools">
           <div className="theme-control">
-            <button className="theme-button" aria-label="Change website colour theme" aria-expanded={themeOpen} onClick={()=>setThemeOpen(x=>!x)}><Icon name="palette"/></button>
-            {themeOpen&&<section className="theme-picker" aria-label="Choose colour theme"><header><small>DISPLAY THEME</small><b>Choose your atmosphere</b></header>{[["graphite","Graphite Grey"],["titanium","Titanium Silver"],["midnight","Midnight Blue"],["burgundy","Burgundy Red"]].map(([value,label])=><button key={value} className={`${value} ${theme===value?"active":""}`} onClick={()=>chooseTheme(value)}><i/><span><b>{label}</b><small>{value==="graphite"?"Professional default":"Apply across MAX CARS"}</small></span>{theme===value&&<em>Selected</em>}</button>)}</section>}
+            <button className="theme-button" aria-label="Change website colour theme" aria-expanded={themeOpen} onClick={()=>signed ? setThemeOpen(x=>!x) : location.assign("/login?returnTo=/")}><Icon name="palette"/></button>
+            {themeOpen&&<section className="theme-picker" aria-label="Choose colour theme"><header><small>DISPLAY THEME</small><b>Choose your atmosphere</b></header>{[["titanium","Titanium Atelier","Graphite · Silver · Red"],["midnight","Midnight Touring","Navy · Steel · Cool white"],["ivory","Ivory Grand Tourer","Ivory · Espresso · Burgundy"],["electric","Electric Horizon","Charcoal · Cyan · Cobalt"],["track","Track Edition","Black · Gunmetal · Racing red"]].map(([value,label,note])=><button key={value} className={`${value} ${theme===value?"active":""}`} onClick={()=>chooseTheme(value)}><i/><span><b>{label}</b><small>{note}</small></span>{theme===value&&<em>Selected</em>}</button>)}</section>}
           </div>
           <button
             className="nav-search-button"
             aria-label="Open vehicle search"
             aria-expanded={searchOpen}
-            onClick={() => setSearchOpen(true)}
+            onClick={() => signed ? setSearchOpen(true) : location.assign("/login?returnTo=/search")}
           >
             <Icon name="search" />
           </button>
@@ -270,7 +287,7 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
             <Icon name="menu" />
           </button>
         </div>
-      </header>
+      </header>}
       {searchOpen && (
         <div
           className="nav-search-backdrop"
@@ -300,11 +317,13 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
                 autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={submitSearch}
+                aria-label="Search by brand, model or variant"
                 placeholder="Search by brand, model or variant"
               />
             </label>
             <div>
-              {suggestions.map((c) => (
+              {suggestions.length ? suggestions.map((c) => (
                 <a href={`/cars/${c.slug}`} key={c.id}>
                   <VehicleImage
                     src={c.image}
@@ -321,7 +340,7 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
                   </span>
                   <em>View →</em>
                 </a>
-              ))}
+              )) : <p className="nav-search-empty" role="status">No vehicles match &quot;{searchQuery.trim()}&quot;. Try another brand or model.</p>}
             </div>
             <footer>
               <a
@@ -329,7 +348,7 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
               >
                 View all search results
               </a>
-              <button onClick={() => setSearchQuery("")}>Clear</button>
+              <button type="button" onClick={() => setSearchQuery("")} disabled={!searchQuery}>Clear</button>
             </footer>
           </section>
         </div>
@@ -351,7 +370,7 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
             <b>MAX <em>CARS</em></b>
           </a>
           {links.map((x) => (
-            <a href={go(x.h)} key={x.n}>
+            <a href={go(x.h)} onClick={() => setMobile(false)} key={x.n}>
               <span>
                 <Icon name={x.i} />
                 {x.n}
@@ -359,7 +378,7 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
               <span>→</span>
             </a>
           ))}
-          <a href={signed ? "/profile" : "/login"}>
+          <a href={signed ? "/profile" : "/login"} onClick={() => setMobile(false)}>
             <span>
               <Icon name="user" />
               {signed ? `${name} · My Profile` : "Profile / Log In"}
@@ -368,8 +387,8 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
           </a>
         </div>
       )}
-      <div className={`route-stage route-${routeTheme(path)}`}>{children}</div>
-      <nav className="bottomnav">
+      <main id="main-content" className={`route-stage route-${routeTheme(path)}`}>{children}</main>
+      {showMemberChrome && <nav className="bottomnav">
         {bottomLinks.map((x) => (
           <a
             className={(x.h === "/" ? path === "/" : path.startsWith(x.h)) ? "active" : ""}
@@ -384,8 +403,8 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
           <Icon name="user" />
           <small>Profile</small>
         </a>
-      </nav>
-      <footer className="site-footer-v2">
+      </nav>}
+      {showFooter && <footer className="site-footer-v2">
         <div className="footer-brand"><a className="logo" href="/" aria-label="MAX CARS home"><b>MAX <em>CARS</em></b></a><h2>Explore. Configure. Drive.</h2><p>Premium vehicle discovery, configuration and ownership support—connected around one verified vehicle record.</p><a className="footer-primary-action" href="/cars"><span>Start exploring</span><span aria-hidden="true">↗</span></a></div>
         <nav className="footer-links" aria-label="MAX CARS journey shortcuts">
           <section><b>Discover</b><a href="/cars"><Icon name="explore"/><span>Explore Cars<small>Browse the complete range</small></span><i>↗</i></a><a href="/compare"><Icon name="compare"/><span>Compare<small>See every difference</small></span><i>↗</i></a><a href="/cars/electric"><Icon name="electric"/><span>Electric<small>Discover the EV range</small></span><i>↗</i></a><a href="/max-3d"><Icon name="max3d"/><span>MAX Experience<small>Configure supported cars</small></span><i>↗</i></a></section>
@@ -393,7 +412,7 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
           <section><b>Account</b><a href="/profile"><Icon name="user"/><span>My Profile<small>Manage your MAX CARS journey</small></span><i>↗</i></a><a href="/favourites"><Icon name="heart"/><span>Saved Cars<small>Return to your shortlist</small></span><i>↗</i></a><a href="/orders"><span className="footer-symbol">R</span><span>Reservations<small>Review active requests</small></span><i>↗</i></a><a href="/support"><Icon name="support"/><span>Support<small>Get precise assistance</small></span><i>↗</i></a></section>
         </nav>
         <div className="footer-bottom"><small>© 2026 MAX CARS · Demo inventory and indicative ex-showroom pricing.</small><span><a href="/support?topic=Privacy%20and%20Security">Privacy</a><a href="/contact">Contact</a></span></div>
-      </footer>
+      </footer>}
     </>
   );
 }

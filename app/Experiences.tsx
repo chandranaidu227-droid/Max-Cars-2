@@ -863,7 +863,7 @@ export function AuthExperience({
             </label>
             <label>
               City
-              <select>
+              <select name="city">
                 <option>Hyderabad</option>
                 <option>Bengaluru</option>
                 <option>Mumbai</option>

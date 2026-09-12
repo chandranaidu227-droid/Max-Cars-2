@@ -1,6 +1,6 @@
 # MAX CARS Vehicle Media Validation
 
-Generated: 2026-08-27T06:22:47.079Z
+Generated: 2026-08-27T12:22:48.048Z
 
 Catalogue routes: 31 · Exact local media: 31 vehicles · Broken mapped files: 0
 

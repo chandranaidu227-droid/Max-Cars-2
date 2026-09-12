@@ -52,6 +52,11 @@ footer .logo > img {
 .global-nav.nav-v2 > nav > a { padding-inline: 8px !important; font-size: 8px !important; }
 .global-nav.nav-v2 .logo img { width: 72px !important; height: 46px !important; object-fit: contain; }
 .global-nav.nav-v2 .logo b { font-size: 10px; }
+.global-nav.nav-v2 > nav > a { position: relative; transition: color .22s ease, transform .22s ease, background-color .22s ease; }
+.global-nav.nav-v2 > nav > a::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 5px; height: 2px; background: #ef233c; transform: scaleX(0); transform-origin: center; transition: transform .22s ease; }
+.global-nav.nav-v2 > nav > a:hover { transform: translateY(-1px); }
+.global-nav.nav-v2 > nav > a.active::after { transform: scaleX(1); }
+.global-nav.nav-v2 > nav > a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 1320px) {
   .global-nav.nav-v2 > nav > a:nth-child(5) { display: none; }
 }

@@ -64,6 +64,36 @@ const categories = [
 ];
 const brandIntro = (b: string) =>
   `${b} vehicles selected for design, engineering and ownership appeal. Review current models, variants and indicative India pricing in one focused collection.`;
+const brandLogoSlugs: Record<string, string> = {
+  Tata: "tata",
+  Mahindra: "mahindra",
+  "Maruti Suzuki": "suzuki",
+  Hyundai: "hyundai",
+  BMW: "bmw",
+  Audi: "audi",
+  "Mercedes-Benz": "mercedes",
+  Porsche: "porsche",
+  Volkswagen: "volkswagen",
+  Toyota: "toyota",
+  Honda: "honda",
+  Kia: "kia",
+  Volvo: "volvo",
+  Jaguar: "jaguar",
+  "Land Rover": "landrover",
+  Lexus: "lexus",
+  Tesla: "tesla",
+  Ferrari: "ferrari",
+  Lamborghini: "lamborghini",
+  Bentley: "bentley",
+  McLaren: "mclaren",
+  Skoda: "skoda",
+  MG: "mg",
+  BYD: "byd",
+  Renault: "renault",
+  Nissan: "nissan",
+  Ford: "ford",
+  Jeep: "jeep",
+};
 function updateStored(key: string, id: string) {
   const list = uniqueStoredIds(localStorage.getItem(key));
   if(key==="max-compare"&&!list.includes(id)&&list.length>=4)return false;
@@ -72,8 +102,10 @@ function updateStored(key: string, id: string) {
   dispatchEvent(new Event("max-state"));
   return next.includes(id);
 }
-function BrandLogo({ brand }: { brand: string }) {
-  return <span className="brand-logo-fallback" aria-label={`${brand} brand wordmark`}>{brand}</span>;
+function BrandLogo({ brand, className = "" }: { brand: string; className?: string }) {
+  const slug = brandLogoSlugs[brand];
+  const localLogos = new Set(["tata", "mahindra", "suzuki", "hyundai", "bmw", "audi", "porsche", "volkswagen", "toyota", "honda", "kia", "volvo", "tesla", "ferrari", "lamborghini", "bentley", "mclaren", "skoda", "mg", "renault", "nissan", "ford", "jeep"]);
+  return <span className={`brand-logo-fallback ${className}`.trim()} aria-label={`${brand} brand logo`}>{slug && localLogos.has(slug) ? <img className="brand-logo-image" src={`/brand-logos/${slug}.svg`} alt={`${brand} logo`} /> : brand}</span>;
 }
 function CarCard({
   car,
@@ -108,7 +140,7 @@ function CarCard({
             alt={`${car.year} ${car.brand} ${car.model} ${car.variant}`}
             sizes="(max-width:680px) 100vw, 50vw"
           />
-          <span>{car.badge}</span>
+          <BrandLogo brand={car.brand} className="image-brand-symbol" />
           <div className="experience-badges"><b>{experience.label}</b>{experience.interior&&<b>Interior View</b>}{experience.ar&&<b>AR Ready</b>}</div>
         </figure>
       </a>
@@ -517,7 +549,7 @@ export default function CarExplorer() {
                     alt={`${c.brand} ${c.model}`}
                     sizes="(max-width:760px) 50vw, 25vw"
                   />
-                  <BrandLogo brand={c.brand} />
+                  <BrandLogo brand={c.brand} className="brand-image-logo" />
                 </figure>
                 <div>
                   <small>
