@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import ProfileMenu from "./ProfileMenu";
 import { cars, short } from "./data";
+import { syncLocalRecords } from "./api-client";
 import VehicleImage from "./VehicleImage";
 type IconName =
   | "home"
@@ -157,6 +158,8 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
       setSessionReady(true);
     };
     sync();
+    void syncLocalRecords();
+    const syncTimer = window.setInterval(() => void syncLocalRecords(), 5000);
     setPath(location.pathname);
     const onScroll = () => setScrolled(scrollY > 24);
     const onKey = (e: KeyboardEvent) => {
@@ -185,6 +188,7 @@ export default function ShellV2({ children }: { children: React.ReactNode }) {
       removeEventListener("storage", sync);
       removeEventListener("storage", syncTheme);
       removeEventListener("max-state", sync);
+      window.clearInterval(syncTimer);
     };
   }, []);
   const chooseTheme=(value:string)=>{
