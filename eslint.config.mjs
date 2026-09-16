@@ -33,6 +33,8 @@ const eslintConfig = defineConfig([
     ".sites-runtime/**",
     ".netlify/**",
     ".wrangler/**",
+    ".test-browser/**",
+    ".kilo/worktrees/**",
     "outputs/**",
     "work/**",
     "android/**/build/**",

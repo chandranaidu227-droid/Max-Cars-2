@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { cars, Car, money, short } from "./data";
 import { apiRequest, saveApiSession } from "./api-client";
+import { getSupabase } from "./supabase-client";
 const notifyState = () => dispatchEvent(new Event("max-state"));
 function useSaved(key: string, seed: string[] = []) {
   const [value, setValue] = useState<string[]>(seed);
@@ -795,11 +796,19 @@ export function AuthExperience({
 }) {
   const [show, setShow] = useState(false),
     [message, setMessage] = useState(""),
+    [forgotSent, setForgotSent] = useState(false),
     [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    if (mode === "login" && new URLSearchParams(location.search).get("passwordReset") === "1") {
+      setMessage("Your password has been updated. Please sign in with your new password.");
+    }
+  }, [mode]);
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting || (mode === "forgot" && forgotSent)) return;
     const f = new FormData(e.currentTarget),
       email = String(f.get("email") || "").trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setMessage("Enter a valid email address."); return; }
     if (mode === "signup" && f.get("password") !== f.get("confirm")) {
       setMessage("Passwords do not match.");
       return;
@@ -808,8 +817,13 @@ export function AuthExperience({
     setMessage("");
     try {
       if (mode === "forgot") {
-        const result = await apiRequest<{message:string}>("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) });
-        setMessage(result.message);
+        const { error } = await getSupabase().auth.resetPasswordForEmail(email, { redirectTo: "https://maxcarx.netlify.app/reset-password" });
+        if (error) {
+          if (error.status === 429 || error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit") throw new Error("Too many reset requests. Please wait before trying again.");
+          if (error.code !== "user_not_found") throw new Error("Unable to send a reset email right now. Please try again later.");
+        }
+        setForgotSent(true);
+        setMessage("If an account exists for this email, you’ll receive a password reset link. Please check your inbox and spam folder.");
         return;
       }
       const path = mode === "signup" ? "/api/auth/register" : "/api/auth/login";
@@ -823,7 +837,7 @@ export function AuthExperience({
       }
       saveApiSession(result.token, result.user);
       const returnTo = new URLSearchParams(location.search).get("returnTo");
-      location.href = returnTo?.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/dashboard";
+      location.href = returnTo?.startsWith("/") && !returnTo.startsWith("//") && !/[\\\u0000-\u001f]/.test(returnTo) ? returnTo : "/dashboard";
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to contact the MAX CARS API.");
     } finally {
@@ -923,12 +937,12 @@ export function AuthExperience({
             {message}
           </p>
         )}
-        {mode === "forgot" && message && <a href="/reset-password">Enter email code or open reset link</a>}
-        <button className="red" disabled={submitting}>
+        {mode === "forgot" && forgotSent && <a href="/reset-password">Enter email code or open reset link</a>}
+        <button className="red" disabled={submitting || (mode === "forgot" && forgotSent)}>
           {submitting ? "Please wait…" : mode === "signup"
             ? "Create secure account"
             : mode === "forgot"
-              ? "Send password reset email"
+              ? "Send reset link"
               : "Log in securely"}
         </button>
         {mode === "login" && (

@@ -10,8 +10,10 @@ export function getSupabase() {
   if (!client && typeof window !== "undefined") {
     // Supabase consumes the URL fragment during initialization. Preserve the
     // purpose first so invitations landing at Site URL can open password setup.
-    const type = new URLSearchParams(window.location.hash.slice(1)).get("type");
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
+    const type = fragment.get("type");
     if (type === "invite" || type === "recovery") sessionStorage.setItem("max-auth-flow", type);
+    if (fragment.has("error") && (type === "recovery" || location.pathname === "/reset-password")) sessionStorage.setItem("max-auth-link-error", "1");
   }
   client ||= createClient(url, key, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "implicit" },

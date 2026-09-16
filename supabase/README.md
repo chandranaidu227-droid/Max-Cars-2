@@ -35,6 +35,13 @@ to that frontend origin when testing locally.
 Keep email confirmation enabled. Configure custom SMTP in Supabase's Auth email
 settings for customer delivery. Supabase's default sender restricts recipients
 and rates; a successful API call alone does not prove inbox delivery.
+For Gmail SMTP, set the sender email and username to the Gmail address that
+sends mail, the sender name to `MaxCarx Support`, host to `smtp.gmail.com`,
+port to `465`, and password to a current Google App Password generated after
+enabling 2-Step Verification. Enter that password only in Supabase's secure
+SMTP settings. The recipient is the address entered in the website's forgot-
+password form. Keep `{{ .ConfirmationURL }}` in the Reset password template;
+Supabase needs that verified link to establish a recovery session.
 
 To send a 6-digit password reset code, open **Authentication → Emails → Templates →
 Reset password** in the Supabase dashboard. Keep the reset link and add the

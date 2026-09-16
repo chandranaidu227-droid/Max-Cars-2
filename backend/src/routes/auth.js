@@ -38,7 +38,7 @@ module.exports = function authRoutes(settings, protect) {
   router.post("/forgot-password", asyncRoute(async (req, res) => {
     const { error } = await req.supabase.auth.resetPasswordForEmail(req.body?.email, { redirectTo: `${settings.publicBaseUrl}/reset-password` });
     if (error) { const failure = authFailure(error, "forgot-password"); return res.status(failure.status).json(failure.body); }
-    res.json({ success: true, message: "If the account exists, recovery instructions will be sent." });
+    res.json({ success: true, message: "If an account exists for this email, you’ll receive a password reset link. Please check your inbox and spam folder." });
   }));
   router.post("/reset-password", protect, asyncRoute(async (req, res) => {
     if (typeof req.body?.password !== "string" || req.body.password.length < 8) return res.status(400).json({ success: false, message: "Use at least 8 characters" });
