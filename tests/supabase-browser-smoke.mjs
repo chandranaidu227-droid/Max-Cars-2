@@ -12,6 +12,7 @@ const pending = new Map();
 let simulatedUser;
 let passwordUpdateSent = false;
 let signOutSent = false;
+let weakPasswordRejected = false;
 ws.onmessage = event => {
   const message = JSON.parse(event.data);
   if (message.method === "Fetch.requestPaused" && simulatedUser) {
@@ -25,7 +26,23 @@ ws.onmessage = event => {
       ] });
       return;
     }
-    if (request.method === "PUT" && request.url.includes("/auth/v1/user")) passwordUpdateSent = true;
+    if (request.method === "PUT" && request.url.includes("/auth/v1/user")) {
+      passwordUpdateSent = true;
+      if (JSON.parse(request.postData || "{}").password === "WeakPassword123!") {
+        weakPasswordRejected = true;
+        void send("Fetch.fulfillRequest", {
+          requestId: message.params.requestId, responseCode: 422,
+          responseHeaders: [
+            { name: "Content-Type", value: "application/json" },
+            { name: "Access-Control-Allow-Origin", value: base },
+            { name: "Access-Control-Allow-Methods", value: "GET,PUT,OPTIONS" },
+            { name: "Access-Control-Allow-Headers", value: "authorization,apikey,x-client-info,content-type,x-supabase-api-version" },
+          ],
+          body: Buffer.from(JSON.stringify({ code: "weak_password", message: "Password is too weak" })).toString("base64"),
+        });
+        return;
+      }
+    }
     void send("Fetch.fulfillRequest", {
       requestId: message.params.requestId, responseCode: 200,
       responseHeaders: [
@@ -68,6 +85,8 @@ const waitFor = async expression => {
 try {
   await send("Page.enable");
   await send("Runtime.enable");
+  await send("Page.navigate", { url: base + "/login" });
+  await waitFor("location.pathname === '/login' && document.readyState !== 'loading'");
   await evaluate("localStorage.clear(); sessionStorage.clear(); true");
   for (const route of ["/cars", "/signup", "/reset-password", "/auth/callback"]) {
     await send("Page.navigate", { url: base + route });
@@ -104,12 +123,15 @@ try {
   await evaluate(`(() => { const form = document.querySelector('form.authcard'); form.elements.password.value = 'Another-Password123'; form.elements.confirm.value = 'Different-Password123'; form.requestSubmit(); })()`);
   await waitFor("document.querySelector('[role=status]')?.textContent.includes('Passwords do not match')");
   assert.equal(passwordUpdateSent, false, "mismatched passwords must not call Supabase");
-  await evaluate(`(() => { const form = document.querySelector('form.authcard'); form.elements.confirm.value = 'Another-Password123'; form.requestSubmit(); })()`);
+  await evaluate(`(() => { const form = document.querySelector('form.authcard'); form.elements.password.value = 'WeakPassword123!'; form.elements.confirm.value = 'WeakPassword123!'; form.requestSubmit(); })()`);
+  await waitFor("document.querySelector('[role=status]')?.textContent.includes('Password is too weak')");
+  assert.equal(weakPasswordRejected, true, "Supabase password policy errors must be visible");
+  await evaluate(`(() => { const form = document.querySelector('form.authcard'); form.elements.password.value = 'Another-Password123'; form.elements.confirm.value = 'Another-Password123'; form.requestSubmit(); })()`);
   await waitFor("location.pathname === '/login' && location.search.includes('passwordReset=1')");
   assert.equal(passwordUpdateSent, true, "Supabase must confirm the password update");
   assert.equal(signOutSent, true, "the recovery session must be signed out");
   await waitFor("document.querySelector('[role=status]')?.textContent.includes('Your password has been updated')");
-  console.log("PASS: mismatch blocked; simulated password update signed out and returned to login.");
+  console.log("PASS: mismatch blocked; weak-password error shown; simulated update signed out and returned to login.");
   fragment.set("type", "recovery");
   await send("Page.navigate", { url: `${base}/#${fragment}` });
   await waitFor("location.pathname === '/reset-password' && document.querySelector('input[name=password]') !== null");
