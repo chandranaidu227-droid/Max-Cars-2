@@ -12,7 +12,24 @@ test("health checks the database and identifies Supabase", async () => {
     const response = await fetch(`${base}/api/health`);
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("x-powered-by"), null);
+    assert.equal(response.headers.get("cache-control"), "no-store");
     assert.equal((await response.json()).provider, "supabase");
+  });
+});
+test("malformed JSON and disallowed origins return client errors", async () => {
+  await withApp({}, async base => {
+    const malformed = await fetch(`${base}/api/auth/register`, { method: "POST", headers: { "content-type": "application/json" }, body: "{" });
+    assert.equal(malformed.status, 400);
+    assert.equal((await malformed.json()).success, false);
+    const forbidden = await fetch(`${base}/api/health`, { headers: { origin: "https://untrusted.example" } });
+    assert.equal(forbidden.status, 403);
+  });
+});
+test("login preserves rate-limit errors instead of blaming the password", async () => {
+  await withApp({ auth: { signInWithPassword: async () => ({ data: null, error: { status: 429, code: "over_request_rate_limit" } }) } }, async base => {
+    const response = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "test@example.com", password: "valid-password" }) });
+    assert.equal(response.status, 429);
+    assert.match((await response.json()).message, /wait/);
   });
 });
 test("missing schema is unavailable rather than healthy", async () => {

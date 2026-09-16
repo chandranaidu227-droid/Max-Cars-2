@@ -8,10 +8,14 @@ const resources = require("./routes/resources");
 function createApp(settings) {
   const app = express();
   app.disable("x-powered-by");
+  app.use("/api", (req, res, next) => {
+    res.set("Cache-Control", "no-store");
+    next();
+  });
   app.use(cors({
     origin(origin, callback) {
       if (!origin || settings.clientOrigins.includes(origin)) return callback(null, true);
-      callback(new Error("Origin not allowed"));
+      callback(Object.assign(new Error("Origin not allowed"), { status: 403 }));
     },
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
@@ -20,6 +24,7 @@ function createApp(settings) {
   // 5 treats an existing req.body as already parsed, so normalize JSON first.
   app.use((req, res, next) => {
     if (Buffer.isBuffer(req.body) && req.is("application/json")) {
+      if (req.body.length > 1024 * 1024) return res.status(413).json({ success: false, message: "Request body is too large" });
       try {
         req.body = JSON.parse(req.body.toString("utf8") || "{}");
       } catch {

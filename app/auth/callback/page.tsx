@@ -8,7 +8,8 @@ export default function AuthCallback() {
     if (fragment.get("error_description")) { setMessage(fragment.get("error_description")!); return; }
     getSupabase().auth.getSession().then(({ data, error }) => {
       if (error || !data.session) { setMessage("This confirmation link is invalid or expired. Try logging in or request a new confirmation email."); return; }
-      window.location.replace("/dashboard");
+      const flow = sessionStorage.getItem("max-auth-flow");
+      window.location.replace(flow === "invite" || flow === "recovery" ? "/reset-password" : "/dashboard");
     }).catch(() => setMessage("Unable to confirm your account. Please try again."));
   }, []);
   return <section className="auth-page"><div className="authcard"><h1>Email confirmation</h1><p role="status">{message}</p><a href="/login">Return to login</a></div></section>;

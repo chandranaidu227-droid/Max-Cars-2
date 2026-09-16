@@ -12,7 +12,10 @@ module.exports = function authRoutes(settings, protect) {
   }));
   router.post("/login", asyncRoute(async (req, res) => {
     const { data, error } = await req.supabase.auth.signInWithPassword({ email: req.body?.email, password: req.body?.password });
-    if (error) return res.status(401).json({ success: false, message: "Invalid credentials or email confirmation is required" });
+    if (error) {
+      if (error.status === 400 || error.status === 401) return res.status(401).json({ success: false, message: "Invalid credentials or email confirmation is required" });
+      throw error;
+    }
     res.json({ success: true, token: data.session.access_token, refreshToken: data.session.refresh_token, user: publicUser(data.user) });
   }));
   router.post("/forgot-password", asyncRoute(async (req, res) => {

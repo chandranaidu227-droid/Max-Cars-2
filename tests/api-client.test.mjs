@@ -19,3 +19,13 @@ test("network failures never create a local account or session", async () => {
     delete globalThis.localStorage;
   }
 });
+test("invalid JSON cannot be mistaken for success; empty DELETE succeeds", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.window = { setTimeout, clearTimeout };
+  try {
+    globalThis.fetch = async () => new Response("<html>Proxy error</html>", { status: 200 });
+    await assert.rejects(apiRequest("/api/vehicles"), /Invalid server response/);
+    globalThis.fetch = async () => new Response(null, { status: 204 });
+    assert.equal(await apiRequest("/api/favourites/test", { method: "DELETE" }), undefined);
+  } finally { globalThis.fetch = originalFetch; delete globalThis.window; }
+});

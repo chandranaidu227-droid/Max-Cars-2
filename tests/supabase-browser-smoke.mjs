@@ -9,8 +9,22 @@ const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((resolve, reject) => { ws.onopen = resolve; ws.onerror = reject; });
 let id = 0;
 const pending = new Map();
+let simulatedUser;
 ws.onmessage = event => {
   const message = JSON.parse(event.data);
+  if (message.method === "Fetch.requestPaused" && simulatedUser) {
+    void send("Fetch.fulfillRequest", {
+      requestId: message.params.requestId, responseCode: 200,
+      responseHeaders: [
+        { name: "Content-Type", value: "application/json" },
+        { name: "Access-Control-Allow-Origin", value: base },
+        { name: "Access-Control-Allow-Methods", value: "GET,PUT,OPTIONS" },
+        { name: "Access-Control-Allow-Headers", value: "authorization,apikey,x-client-info,content-type,x-supabase-api-version" },
+      ],
+      body: Buffer.from(JSON.stringify(simulatedUser)).toString("base64"),
+    });
+    return;
+  }
   if (!message.id) return;
   const item = pending.get(message.id);
   if (!item) return;
@@ -55,4 +69,15 @@ try {
   await waitFor("location.pathname === '/login'");
   assert.match(await evaluate("location.search"), /returnTo=/);
   console.log("PASS: public catalogue, signup, recovery and confirmation routes; expired recovery handling; protected dashboard redirect.");
+  // Simulate only Supabase's identity response; no real invitation, account,
+  // password update or email is created by this browser regression check.
+  simulatedUser = { id: "10000000-0000-0000-0000-000000000001", aud: "authenticated", role: "authenticated", email: "browser-test@example.com", user_metadata: { name: "Browser Test" }, app_metadata: {}, created_at: new Date().toISOString() };
+  await send("Fetch.enable", { patterns: [{ urlPattern: "*supabase.co/auth/v1/user*", requestStage: "Request" }] });
+  const encode = value => Buffer.from(JSON.stringify(value)).toString("base64url");
+  const now = Math.floor(Date.now() / 1000);
+  const token = `${encode({ alg: "HS256", typ: "JWT" })}.${encode({ sub: simulatedUser.id, aud: "authenticated", role: "authenticated", exp: now + 3600, iat: now })}.${encode("browser-test")}`;
+  const fragment = new URLSearchParams({ access_token: token, refresh_token: "browser-test-refresh", token_type: "bearer", expires_in: "3600", expires_at: String(now + 3600), type: "invite" });
+  await send("Page.navigate", { url: `${base}/#${fragment}` });
+  await waitFor("location.pathname === '/reset-password' && document.querySelector('input[name=password]') !== null");
+  console.log("PASS: simulated invitation landing on the homepage opens password setup.");
 } finally { ws.close(); }

@@ -19,6 +19,9 @@ export default function SupabaseSession() {
           localStorage.removeItem("max-session");
         }
         dispatchEvent(new Event("max-state"));
+        if (session && (_event === "PASSWORD_RECOVERY" || ["invite", "recovery"].includes(sessionStorage.getItem("max-auth-flow") || "")) && location.pathname !== "/reset-password") {
+          location.replace("/reset-password");
+        }
       });
       return () => data.subscription.unsubscribe();
     } catch {

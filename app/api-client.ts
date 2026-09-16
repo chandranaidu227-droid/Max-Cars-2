@@ -31,8 +31,10 @@ export async function apiRequest<T>(path: string, options: ApiOptions = {}): Pro
     window.clearTimeout(timeout);
     options.signal?.removeEventListener("abort", abort);
   }
-  const payload = await response.json().catch(() => ({ success: false, message: "Invalid server response" }));
+  if (response.status === 204) return undefined as T;
+  const payload = await response.json().catch(() => { throw new Error("Invalid server response. Please try again later."); });
   if (!response.ok) throw new Error(payload.message || "Request failed");
+  if (payload.success === false) throw new Error(payload.message || "Request failed");
   if (payload.token && payload.refreshToken) {
     const { getSupabase } = await import("./supabase-client");
     const { error } = await getSupabase().auth.setSession({ access_token: payload.token, refresh_token: payload.refreshToken });

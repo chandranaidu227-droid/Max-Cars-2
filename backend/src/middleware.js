@@ -19,7 +19,7 @@ function notFound(req, res) { res.status(404).json({ success: false, message: "A
 function errorHandler(error, req, res, next) {
   void next;
   const status = error.code === "23505" ? 409 : error.code === "42501" ? 403 : ["23514", "23502", "22P02", "22007", "PGRST102"].includes(error.code) ? 400 : error.status >= 400 && error.status < 500 ? error.status : 503;
-  const message = status === 409 ? "This record already exists" : status === 403 ? "Access denied" : status === 400 ? "Invalid request data" : status === 401 ? "Invalid or expired session" : "The database is unavailable or setup is incomplete. Please try again later.";
+  const message = status === 409 ? "This record already exists" : status === 403 ? "Access denied" : status === 400 || status === 422 ? "Invalid request data" : status === 401 ? "Invalid or expired session" : status === 429 ? "Too many requests. Please wait before trying again." : status === 413 ? "Request body is too large" : "The service is temporarily unavailable. Please try again later.";
   console.error("API error:", error.code || error.name || "unknown");
   res.status(status).json({ success: false, message });
 }
