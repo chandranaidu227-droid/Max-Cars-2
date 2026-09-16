@@ -1,50 +1,43 @@
 const express = require("express");
-const { hashPassword, verifyPassword, signToken } = require("../auth");
-const { User } = require("../models");
 const { asyncRoute } = require("../middleware");
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const publicUser = (user) => ({ id: user.id, name: user.name, email: user.email, phone: user.phone, city: user.city, role: user.role });
-
-module.exports = function authRoutes(secret, authenticate) {
+const { result, publicUser } = require("../supabase");
+module.exports = function authRoutes(settings, protect) {
   const router = express.Router();
-
   router.post("/register", asyncRoute(async (req, res) => {
-    const { name, email, password, phone = "", city = "" } = req.body || {};
-    const normalizedName = String(name || "").trim();
-    const normalizedEmail = String(email).trim().toLowerCase();
-    const normalizedPhone = String(phone).replace(/\D/g, "").replace(/^91(?=\d{10}$)/, "");
-    if (normalizedName.length < 2) return res.status(400).json({ success: false, message: "Enter your full name" });
-    if (!emailPattern.test(normalizedEmail)) return res.status(400).json({ success: false, message: "Enter a valid email address" });
-    if (String(password || "").length < 8) return res.status(400).json({ success: false, message: "Password must contain at least 8 characters" });
-    if (normalizedPhone && !/^\d{10}$/.test(normalizedPhone)) return res.status(400).json({ success: false, message: "Enter a valid 10-digit Indian mobile number" });
-    if (await User.exists({ email: normalizedEmail })) return res.status(409).json({ success: false, message: "An account with this email already exists" });
-    const user = await User.create({ name: normalizedName, email: normalizedEmail, phone: normalizedPhone, city, passwordHash: await hashPassword(String(password)) });
-    res.status(201).json({ success: true, token: signToken(user, secret), user: publicUser(user) });
+    const { email, password, name, phone = "", city = "" } = req.body || {};
+    if (typeof name !== "string" || name.trim().length < 2 || typeof password !== "string" || password.length < 8) return res.status(400).json({ success: false, message: "Enter your name and a password of at least 8 characters" });
+    const { data, error } = await req.supabase.auth.signUp({ email, password, options: { data: { name: name.trim(), phone, city }, emailRedirectTo: `${settings.publicBaseUrl}/auth/callback` } });
+    if (error) throw error;
+    res.status(201).json({ success: true, token: data.session?.access_token, refreshToken: data.session?.refresh_token, user: data.user ? publicUser(data.user) : null, confirmationRequired: !data.session, message: "Check your email to confirm your account before logging in." });
   }));
-
   router.post("/login", asyncRoute(async (req, res) => {
-    const email = String(req.body?.email || "").trim().toLowerCase();
-    if (!emailPattern.test(email)) return res.status(400).json({ success: false, message: "Enter a valid email address" });
-    if (String(req.body?.password || "").length < 8) return res.status(400).json({ success: false, message: "Enter your password of at least 8 characters" });
-    const user = await User.findOne({ email }).select("+passwordHash");
-    if (!user || !user.active || !(await verifyPassword(String(req.body?.password || ""), user.passwordHash))) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
-    }
-    res.json({ success: true, token: signToken(user, secret), user: publicUser(user) });
+    const { data, error } = await req.supabase.auth.signInWithPassword({ email: req.body?.email, password: req.body?.password });
+    if (error) return res.status(401).json({ success: false, message: "Invalid credentials or email confirmation is required" });
+    res.json({ success: true, token: data.session.access_token, refreshToken: data.session.refresh_token, user: publicUser(data.user) });
   }));
-
-  router.get("/me", authenticate, (req, res) => res.json({ success: true, user: publicUser(req.user) }));
-  router.patch("/me", authenticate, asyncRoute(async (req, res) => {
-    for (const key of ["name", "phone", "city"]) if (req.body?.[key] !== undefined) req.user[key] = String(req.body[key]).trim();
-    await req.user.save();
-    res.json({ success: true, user: publicUser(req.user) });
+  router.post("/forgot-password", asyncRoute(async (req, res) => {
+    const { error } = await req.supabase.auth.resetPasswordForEmail(req.body?.email, { redirectTo: `${settings.publicBaseUrl}/reset-password` });
+    if (error) throw error;
+    res.json({ success: true, message: "If the account exists, recovery instructions will be sent." });
   }));
-
-  router.post("/forgot-password", (req, res) => {
-    void req;
-    res.json({ success: true, message: "If the account exists, recovery instructions will be sent when email delivery is configured" });
-  });
-
+  router.post("/reset-password", protect, asyncRoute(async (req, res) => {
+    if (typeof req.body?.password !== "string" || req.body.password.length < 8) return res.status(400).json({ success: false, message: "Use at least 8 characters" });
+    const response = await fetch(`${settings.supabaseUrl}/auth/v1/user`, {
+      method: "PUT",
+      headers: { apikey: settings.supabaseKey, Authorization: req.get("authorization"), "Content-Type": "application/json" },
+      body: JSON.stringify({ password: req.body.password }), signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) return res.status(response.status).json({ success: false, message: "Unable to update password. Request a new recovery link or try another password." });
+    res.json({ success: true, message: "Password updated. Log in with your new password." });
+  }));
+  router.get("/me", protect, asyncRoute(async (req, res) => {
+    const profile = await result(req.supabase.from("profiles").select("*").eq("id", req.user.id).single());
+    res.json({ success: true, user: { ...publicUser(req.user), ...profile } });
+  }));
+  router.patch("/me", protect, asyncRoute(async (req, res) => {
+    const values = Object.fromEntries(["name", "phone", "city"].filter(key => req.body?.[key] !== undefined).map(key => [key, String(req.body[key]).trim()]));
+    const user = await result(req.supabase.from("profiles").update(values).eq("id", req.user.id).select().single());
+    res.json({ success: true, user });
+  }));
   return router;
 };

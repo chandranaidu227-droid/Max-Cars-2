@@ -1,1 +1,1 @@
-export default function Loading(){return <section className="brand-loading" aria-label="Loading MAX CARS experience"><strong>MAX <em>CARS</em></strong><span>Preparing your experience</span><i/></section>}
+export default function Loading(){return <section className="brand-loading" aria-label="Loading MAX CARS experience"><b>MAX <em>CARS</em></b><span>Preparing your experience</span><i/></section>}

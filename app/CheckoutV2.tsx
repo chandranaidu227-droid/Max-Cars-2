@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { apiRequest } from "./api-client";
 import { cars, money, short } from "./data";
 import VehicleImage from "./VehicleImage";
 import { vehicleMedia } from "./vehicle-detail-data";
@@ -66,17 +67,13 @@ function digits(value: string) {
   return value.replace(/\D/g, "").slice(0, 10);
 }
 
-function createReference() {
-  const stamp = Date.now().toString(36).slice(-6).toUpperCase();
-  return `MC-RES-${stamp}`;
-}
-
 export default function CheckoutV2() {
   const [stage, setStage] = useState(0);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [draft, setDraft] = useState<CheckoutDraft>(emptyDraft);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [reference, setReference] = useState("");
   const [restored, setRestored] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -176,7 +173,7 @@ export default function CheckoutV2() {
     goTo(Math.min(stage + 1, 2));
   };
 
-  const submit = (event: FormEvent) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!validateDetails()) {
       goTo(1);
@@ -189,9 +186,14 @@ export default function CheckoutV2() {
     if (submitting || submitLockRef.current) return;
     submitLockRef.current = true;
     setSubmitting(true);
-    const id = createReference();
+    setSubmitError("");
+    if (!localStorage.getItem("max-auth-token") || localStorage.getItem("max-auth-token")?.startsWith("local.")) {
+      setSubmitting(false);
+      submitLockRef.current = false;
+      setSubmitError("Please log in before submitting your reservation.");
+      return;
+    }
     const record = {
-      id,
       status: "Dealer verification requested",
       created: new Date().toISOString(),
       cart,
@@ -214,17 +216,28 @@ export default function CheckoutV2() {
         : null,
       payment: { mode: "test", collected: false, amount: 0 },
     };
-    window.setTimeout(() => {
-      localStorage.setItem("max-order", JSON.stringify(record));
-      const orders = JSON.parse(localStorage.getItem("max-orders") || "[]");
-      localStorage.setItem("max-orders", JSON.stringify([record, ...orders.filter((x: { id: string }) => x.id !== id)]));
-      localStorage.removeItem("max-checkout-draft");
+    try {
+      const result = await apiRequest<{ record: { reference: string } }>("/api/orders", {
+        method: "POST", authenticated: true,
+        body: JSON.stringify({ items: cart, customer: record.customer, fulfilment: { ...record.fulfilment, tradeIn: record.tradeIn } }),
+      });
+      const id = result.record.reference;
+      try {
+        const receipt = { ...record, id, reference: id, backendSaved: true };
+        localStorage.setItem("max-order", JSON.stringify(receipt));
+        const orders = JSON.parse(localStorage.getItem("max-orders") || "[]");
+        localStorage.setItem("max-orders", JSON.stringify([receipt, ...orders]));
+        localStorage.removeItem("max-checkout-draft");
+      } catch { /* The server already saved this reservation. */ }
       setReference(id);
-      submitLockRef.current = false;
-      setSubmitting(false);
       setStage(3);
       window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 550);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to save reservation. Please try again.");
+    } finally {
+      submitLockRef.current = false;
+      setSubmitting(false);
+    }
   };
 
   const fieldError = (key: keyof CheckoutDraft) =>
@@ -283,6 +296,7 @@ export default function CheckoutV2() {
         </section>
       ) : (
         <form className="checkout-layout" onSubmit={submit} noValidate>
+          {submitError && <p role="alert" className="checkout-error">{submitError} <Link href="/login?returnTo=/checkout">Log in</Link></p>}
           <section className="checkout-main-card">
             {Object.values(errors).some(Boolean) && (
               <div className="checkout-error-summary" ref={errorRef} tabIndex={-1} role="alert">

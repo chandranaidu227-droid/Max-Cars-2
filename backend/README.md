@@ -1,49 +1,34 @@
-# MAX CARS API
+# MAX CARS Supabase API
 
-Express and MongoDB API for the MAX CARS frontend.
+Express API backed by Supabase Auth and PostgreSQL. MongoDB is no longer used.
 
-## Setup
+See [Supabase setup](../supabase/README.md) for the SQL and deployment steps.
 
-1. Copy `.env.example` to `.env`.
-2. Set `MONGODB_URI` and a private random `AUTH_SECRET` of at least 32 characters.
-3. Set `CLIENT_ORIGINS` to the comma-separated frontend origins allowed to call the API.
-4. Run `npm install` and `npm run dev`.
+## Local development
 
-Never commit `.env`. The repository ignore rules exclude it.
+1. Configure `backend/.env` using `.env.example`.
+2. Run `npm install` in this directory, then `npm run dev`.
+3. Set the frontend public Supabase variables in the root `.env.local`.
+4. Run `npm run dev` from the repository root.
 
-## API
+Requests use each customer's Supabase access token. The API validates identity
+with `auth.getUser()`, and PostgreSQL row policies enforce ownership. No
+service-role key is required by the application.
 
-Public:
+`GET /api/health` checks the real vehicles table and returns 503 until setup is complete.
+Auth endpoints remain under `/api/auth`. Data routes remain under `/api/vehicles`,
+`/api/favourites`, `/api/bookings`, `/api/orders`, `/api/listings`, `/api/support`
+and `/api/admin`. Orders and support tickets support create/read only.
 
-- `GET /api/health`
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/forgot-password`
-- `GET /api/vehicles`
-- `GET /api/vehicles/:slug`
+## Checks
 
-Authenticated Bearer-token routes:
+- `npm test`: mocked HTTP route and authentication checks.
+- `npm run test:live`: read-only Supabase connection and anonymous access check.
+- `npm run seed:vehicles`: regenerate the local SQL setup and catalogue files;
+  this does not write to a database.
+- From the repository root: `npm run test:supabase` tests the migration and
+  ownership policies in a disposable embedded PostgreSQL database.
 
-- `GET/PATCH /api/auth/me`
-- `GET/POST/DELETE /api/favourites`
-- `GET/POST/PATCH/DELETE /api/bookings`
-- `GET/POST /api/orders`
-- `GET/POST/PATCH/DELETE /api/listings`
-- `GET/POST /api/support`
-
-Admin-only:
-
-- `GET /api/admin/summary`
-- `POST /api/admin/vehicles`
-- `PATCH /api/admin/vehicles/:id`
-
-Run `npm test` to execute backend unit and HTTP tests.
-
-## Netlify deployment
-
-The repository includes `netlify/functions/api.js` and a rewrite from `/api/*`
-to that function. In Netlify, configure the private environment variables
-`MONGODB_URI` and `AUTH_SECRET`. Netlify's `URL` and `DEPLOY_PRIME_URL` are
-automatically added to the allowed CORS origins. Production frontend requests
-use the same-origin `/api` path; local development continues to use
-`http://localhost:5000`.
+Supabase manages confirmation and recovery emails. Configure sender credentials
+in Supabase, not in the Express server. Real payments are still not enabled.
+Archived MongoDB files under `legacy-mongodb/` are not runnable or used by the app.

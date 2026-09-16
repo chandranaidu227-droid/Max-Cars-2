@@ -1,4 +1,4 @@
-const required = ["MONGODB_URI", "AUTH_SECRET"];
+const required = ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"];
 
 function config() {
   const missing = required.filter((key) => !process.env[key]);
@@ -7,8 +7,9 @@ function config() {
   }
   return {
     port: Number(process.env.PORT) || 5000,
-    mongoUri: process.env.MONGODB_URI,
-    authSecret: process.env.AUTH_SECRET,
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseKey: process.env.SUPABASE_PUBLISHABLE_KEY,
+    publicBaseUrl: process.env.PUBLIC_BASE_URL || process.env.URL || "http://localhost:3000",
     clientOrigins: [process.env.CLIENT_ORIGINS || "http://localhost:3000,http://localhost:5173", process.env.URL, process.env.DEPLOY_PRIME_URL]
       .filter(Boolean)
       .join(",")

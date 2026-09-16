@@ -25,6 +25,7 @@ import "./requested-fixes-v5.css";
 import "./titanium-system.css";
 import Shell from "./ShellV2";
 import SessionGuard from "./SessionGuard";
+import SupabaseSession from "./SupabaseSession";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://max-cars-premium.chandranaidu227.chatgpt.site"),
@@ -45,5 +46,5 @@ export const viewport: Viewport = { themeColor: "#111316" };
 const themeBoot = `(function(){try{var t=localStorage.getItem('max-theme')||'titanium';var allowed=['titanium','midnight','ivory','electric','track'];if(allowed.indexOf(t)<0)t='titanium';document.documentElement.dataset.maxTheme=t;}catch(e){document.documentElement.dataset.maxTheme='titanium';}})();`;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <html lang="en" data-max-theme="titanium" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{__html:themeBoot}} /></head><body><a className="skip-link" href="#main-content">Skip to main content</a><SessionGuard><Shell>{children}</Shell></SessionGuard></body></html>;
+  return <html lang="en" data-max-theme="titanium" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{__html:themeBoot}} /></head><body><SupabaseSession/><a className="skip-link" href="#main-content">Skip to main content</a><SessionGuard><Shell>{children}</Shell></SessionGuard></body></html>;
 }

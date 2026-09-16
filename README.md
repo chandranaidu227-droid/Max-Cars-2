@@ -3,6 +3,12 @@
 Premium automotive discovery, configuration, reservation, location and support
 experience built with Next.js, React, TypeScript and Three.js.
 
+## Supabase backend
+
+The API now uses Supabase Auth and Postgres. Follow [the setup guide](supabase/README.md)
+to install `supabase/setup.sql` and configure Supabase email redirects and Netlify
+environment variables before deploying. MongoDB is no longer used.
+
 ## Deploy to Netlify
 
 1. Push this repository to GitHub.

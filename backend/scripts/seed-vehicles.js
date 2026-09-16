@@ -1,10 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
-const mongoose = require("mongoose");
-require("dotenv").config({ quiet: true });
-const { config } = require("../src/config");
-const { Vehicle } = require("../src/models");
 
 function readCatalogue() {
   const source = fs.readFileSync(path.join(__dirname, "../../app/data.ts"), "utf8");
@@ -37,6 +33,7 @@ function readCatalogue() {
     metadata: { sourceImage: item[10], source: "MAX CARS catalogue" },
   }));
   records.push({
+    id: "mc-bmw-m2-g87",
     slug: "bmw-m2",
     brand: "BMW",
     model: "M2",
@@ -63,19 +60,23 @@ function readCatalogue() {
   return records;
 }
 
-async function seed() {
-  const settings = config();
-  const records = readCatalogue();
-  await mongoose.connect(settings.mongoUri);
-  for (const record of records) {
-    await Vehicle.findOneAndUpdate({ slug: record.slug }, { $set: record }, { upsert: true, returnDocument: "after", setDefaultsOnInsert: true });
-  }
-  console.log(`Seeded ${records.length} vehicles into MongoDB Atlas`);
-  await mongoose.disconnect();
+function generateSql() {
+  const records = readCatalogue().map((row, index) => ({
+    catalogueId: row.id || `mc-${String(index + 1).padStart(3, "0")}`,
+    slug: row.slug, brand: row.brand, model: row.model, variant: row.variant,
+    price: row.price, fuel: row.fuel, body: row.body, year: row.year, image: row.image, metadata: row,
+  }));
+  const json = JSON.stringify(records).replaceAll("'", "''");
+  const columns = '"catalogueId", slug, brand, model, variant, price, fuel, body, year, image, metadata';
+  return `-- Generated vehicle catalogue; existing slugs are preserved.\ninsert into public.vehicles (${columns})\nselect ${columns} from jsonb_to_recordset('${json}'::jsonb) as v("catalogueId" text, slug text, brand text, model text, variant text, price numeric, fuel text, body text, year integer, image text, metadata jsonb)\non conflict (slug) do nothing;\n`;
 }
-
-seed().catch(async error => {
-  console.error(`Vehicle seed failed: ${error.message}`);
-  if (mongoose.connection.readyState) await mongoose.disconnect();
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  const root = path.join(__dirname, "../../supabase");
+  fs.mkdirSync(root, { recursive: true });
+  const seed = generateSql();
+  fs.writeFileSync(path.join(root, "seed.sql"), seed);
+  const migration = fs.readFileSync(path.join(root, "migrations/202609150001_max_cars.sql"), "utf8");
+  fs.writeFileSync(path.join(root, "setup.sql"), '-- Run once in the Supabase SQL Editor for this project.\n' + migration + '\n' + seed);
+  console.log("Generated supabase/setup.sql with schema, RLS and 32 catalogue vehicles. No database was changed.");
+}
+module.exports = { readCatalogue, generateSql };

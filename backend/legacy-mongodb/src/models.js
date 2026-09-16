@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, trim: true, default: "" },
   city: { type: String, trim: true, default: "" },
   passwordHash: { type: String, required: true, select: false },
+  resetTokenHash: { type: String, select: false },
+  resetTokenExpiresAt: { type: Date, select: false },
+  sessionVersion: { type: Number, default: 0 },
   role: { type: String, enum: ["customer", "admin"], default: "customer" },
   active: { type: Boolean, default: true },
 }, options);

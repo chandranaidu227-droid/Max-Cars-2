@@ -6,27 +6,28 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "install:ci": "bash scripts/install-ci.sh",
+    "install:ci": "node scripts/install-ci.js",
     "dev": "vite",
-    "build": "bash scripts/build-verified.sh",
+    "build": "node scripts/build-verified.js",
     "build:netlify": "next build",
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "validate:media": "node scripts/validate-vehicle-media.mjs",
     "validate:catalogue": "node scripts/validate-catalogue-integrity.mjs",
-    "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate"
+    "lint": "node scripts/sites-env.js -- eslint . --ignore-pattern dist --ignore-pattern .next",
+    "db:generate": "node scripts/sites-env.js -- drizzle-kit generate",
+    "test:supabase": "node --experimental-strip-types --test tests/supabase-database.test.mjs tests/api-client.test.mjs tests/account-cache.test.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.1",
     "@capacitor/cli": "^8.5.1",
     "@capacitor/core": "^8.5.1",
+    "@supabase/supabase-js": "^2.116.0",
     "@types/three": "^0.185.4",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "drizzle-orm": "0.45.2",
     "express": "^5.2.1",
-    "mongoose": "^9.9.4",
     "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",
+    "@electric-sql/pglite": "^0.5.8",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",

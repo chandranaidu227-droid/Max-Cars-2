@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { authenticate, notFound, errorHandler } = require("./middleware");
+const { clientFor, result } = require("./supabase");
 const authRoutes = require("./routes/auth");
 const resources = require("./routes/resources");
 
@@ -29,9 +30,16 @@ function createApp(settings) {
   });
   app.use(express.json({ limit: "1mb" }));
   app.get("/", (req, res) => res.send("MAX CARS Backend is running!"));
-  app.get("/api/health", (req, res) => res.json({ success: true, message: "MAX CARS API connected successfully" }));
-  const protect = authenticate(settings.authSecret);
-  app.use("/api/auth", authRoutes(settings.authSecret, protect));
+  app.use((req, res, next) => {
+    req.supabase = settings.clientFactory ? settings.clientFactory(req) : clientFor(settings, req.get("authorization")?.startsWith("Bearer ") ? req.get("authorization").slice(7) : undefined);
+    next();
+  });
+  app.get("/api/health", require("./middleware").asyncRoute(async (req, res) => {
+    await result(req.supabase.from("vehicles").select("id").limit(1));
+    res.json({ success: true, provider: "supabase", message: "MAX CARS API connected successfully" });
+  }));
+  const protect = authenticate();
+  app.use("/api/auth", authRoutes(settings, protect));
   app.use("/api/vehicles", resources.vehicleRoutes());
   app.use("/api/favourites", protect, resources.favouriteRoutes());
   app.use("/api/bookings", protect, resources.bookingRoutes());

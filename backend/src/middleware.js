@@ -1,42 +1,26 @@
-const { verifyToken } = require("./auth");
-const { User } = require("./models");
-
-function asyncRoute(handler) {
-  return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
-}
-
-function authenticate(secret) {
+const { result } = require("./supabase");
+function asyncRoute(handler) { return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next); }
+function authenticate() {
   return asyncRoute(async (req, res, next) => {
-    const header = req.get("authorization") || "";
-    const token = header.startsWith("Bearer ") ? header.slice(7) : "";
-    if (!token) return res.status(401).json({ success: false, message: "Authentication required" });
-    let payload;
-    try { payload = verifyToken(token, secret); }
-    catch { return res.status(401).json({ success: false, message: "Invalid or expired session" }); }
-    const user = await User.findById(payload.sub);
-    if (!user || !user.active) return res.status(401).json({ success: false, message: "Account unavailable" });
-    req.user = user;
+    const token = req.get("authorization")?.replace(/^Bearer /, "");
+    if (!token || !req.get("authorization")?.startsWith("Bearer ")) return res.status(401).json({ success: false, message: "Authentication required" });
+    const { data, error } = await req.supabase.auth.getUser(token);
+    if (error || !data.user) return res.status(401).json({ success: false, message: "Invalid or expired session" });
+    req.user = data.user;
     next();
   });
 }
-
-function requireAdmin(req, res, next) {
-  if (req.user?.role !== "admin") return res.status(403).json({ success: false, message: "Admin access required" });
+const requireAdmin = asyncRoute(async (req, res, next) => {
+  const profile = await result(req.supabase.from("profiles").select("role").eq("id", req.user.id).maybeSingle());
+  if (profile?.role !== "admin") return res.status(403).json({ success: false, message: "Admin access required" });
   next();
-}
-
-function notFound(req, res) {
-  res.status(404).json({ success: false, message: "API route not found" });
-}
-
+});
+function notFound(req, res) { res.status(404).json({ success: false, message: "API route not found" }); }
 function errorHandler(error, req, res, next) {
   void next;
-  if (error?.code === 11000) return res.status(409).json({ success: false, message: "This record already exists" });
-  if (error?.name === "ValidationError" || error?.name === "CastError") {
-    return res.status(400).json({ success: false, message: "Invalid request data" });
-  }
-  console.error("API error:", error.message);
-  res.status(500).json({ success: false, message: "Internal server error" });
+  const status = error.code === "23505" ? 409 : error.code === "42501" ? 403 : ["23514", "23502", "22P02", "22007", "PGRST102"].includes(error.code) ? 400 : error.status >= 400 && error.status < 500 ? error.status : 503;
+  const message = status === 409 ? "This record already exists" : status === 403 ? "Access denied" : status === 400 ? "Invalid request data" : status === 401 ? "Invalid or expired session" : "The database is unavailable or setup is incomplete. Please try again later.";
+  console.error("API error:", error.code || error.name || "unknown");
+  res.status(status).json({ success: false, message });
 }
-
 module.exports = { asyncRoute, authenticate, requireAdmin, notFound, errorHandler };

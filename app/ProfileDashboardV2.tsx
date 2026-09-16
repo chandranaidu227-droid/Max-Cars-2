@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
-import {clearApiSession} from "./api-client";
+import {signOut} from "./supabase-client";
 
 type Session={name:string;email:string};
 type Profile={phone:string;dob:string;city:string;postcode:string;dealer:string;brands:string;budget:string;body:string;fuel:string;memberSince:string};
@@ -14,7 +14,7 @@ export default function ProfileDashboardV2(){
   const initials=useMemo(()=>session.name.split(/\s+/).map(x=>x[0]).join("").slice(0,2).toUpperCase(),[session.name]);
   const upload=(file?:File)=>{if(!file)return;if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>3*1024*1024){setNotice("Choose a JPG, PNG or WebP under 3 MB.");return}const reader=new FileReader();reader.onload=()=>{const value=String(reader.result);localStorage.setItem("max-avatar",value);setAvatar(value);dispatchEvent(new Event("max-state"))};reader.readAsDataURL(file)};
   const save=(event:React.FormEvent)=>{event.preventDefault();localStorage.setItem("max-profile",JSON.stringify(profile));localStorage.setItem("max-session",JSON.stringify(session));dispatchEvent(new Event("max-state"));setEditing(false);setNotice("Profile preferences saved on this device.")};
-  const logout=()=>{clearApiSession();localStorage.removeItem("max-avatar");location.replace("/")};
+  const logout=async()=>{await signOut();localStorage.removeItem("max-avatar");location.replace("/")};
   const cards=[
     ["Saved cars",counts.saved,"/favourites","heart"],["Active comparisons",counts.compare,"/compare","compare"],["Test drives",counts.bookings,"/dashboard/bookings","calendar"],["Configurations",counts.configs,"/max-3d/saved","cube"],["My car listings",counts.listings,"/profile/listings","car"],["Reservations",counts.orders,"/orders","receipt"],["Support tickets",counts.tickets,"/support#support-tracking","help"],["Notifications",counts.notifications,"/notifications","bell"],
   ] as const;

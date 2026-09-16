@@ -1,35 +1,42 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { createApp } = require("../src/app");
-
-const settings = {
-  authSecret: "test-secret-that-is-long-enough-for-tests",
-  clientOrigins: ["http://localhost:3000"],
-};
-
-test("health endpoint responds without exposing framework headers", async () => {
-  const server = createApp(settings).listen(0);
-  await new Promise((resolve) => server.once("listening", resolve));
-  try {
-    const { port } = server.address();
-    const response = await fetch(`http://127.0.0.1:${port}/api/health`);
+async function withApp(client, run) {
+  const server = createApp({ clientOrigins: ["http://localhost:3000"], publicBaseUrl: "https://example.com", clientFactory: () => client }).listen(0);
+  await new Promise(resolve => server.once("listening", resolve));
+  try { await run(`http://127.0.0.1:${server.address().port}`); }
+  finally { await new Promise(resolve => server.close(resolve)); }
+}
+test("health checks the database and identifies Supabase", async () => {
+  await withApp({ from: table => { assert.equal(table, "vehicles"); return { select: () => ({ limit: async () => ({ data: [], error: null }) }) }; } }, async base => {
+    const response = await fetch(`${base}/api/health`);
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("x-powered-by"), null);
-    assert.deepEqual(await response.json(), { success: true, message: "MAX CARS API connected successfully" });
-  } finally {
-    await new Promise((resolve) => server.close(resolve));
-  }
+    assert.equal((await response.json()).provider, "supabase");
+  });
 });
-
-test("unknown API routes return JSON 404", async () => {
-  const server = createApp(settings).listen(0);
-  await new Promise((resolve) => server.once("listening", resolve));
-  try {
-    const { port } = server.address();
-    const response = await fetch(`http://127.0.0.1:${port}/api/missing`);
-    assert.equal(response.status, 404);
-    assert.equal((await response.json()).success, false);
-  } finally {
-    await new Promise((resolve) => server.close(resolve));
-  }
+test("missing schema is unavailable rather than healthy", async () => {
+  await withApp({ from: () => ({ select: () => ({ limit: async () => ({ error: { code: "PGRST205" } }) }) }) }, async base => {
+    assert.equal((await fetch(`${base}/api/health`)).status, 503);
+  });
+});
+test("anonymous requests cannot access protected resources", async () => {
+  await withApp({}, async base => {
+    for (const path of ["/orders", "/bookings", "/favourites", "/listings", "/support", "/admin/summary", "/auth/me"]) assert.equal((await fetch(`${base}/api${path}`)).status, 401);
+    assert.equal((await fetch(`${base}/api/missing`)).status, 404);
+  });
+});
+test("forged bearer tokens are rejected", async () => {
+  await withApp({ auth: { getUser: async () => ({ data: { user: null }, error: new Error("invalid") }) } }, async base => {
+    assert.equal((await fetch(`${base}/api/orders`, { headers: { authorization: "Bearer forged" } })).status, 401);
+  });
+});
+test("signup without a session requires email confirmation", async () => {
+  await withApp({ auth: { signUp: async () => ({ data: { user: { id: "test-user", email: "test@example.com" }, session: null }, error: null }) } }, async base => {
+    const response = await fetch(`${base}/api/auth/register`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: "Test User", email: "test@example.com", password: "valid-password" }) });
+    const body = await response.json();
+    assert.equal(response.status, 201);
+    assert.equal(body.confirmationRequired, true);
+    assert.equal(body.token, undefined);
+  });
 });

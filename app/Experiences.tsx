@@ -816,7 +816,11 @@ export function AuthExperience({
       const body = mode === "signup"
         ? { name: f.get("name"), email, password: f.get("password"), phone: f.get("phone"), city: f.get("city") }
         : { email, password: f.get("password") };
-      const result = await apiRequest<{token:string;user:{name:string;email:string;role?:string}}>(path, { method: "POST", body: JSON.stringify(body) });
+      const result = await apiRequest<{token?:string;confirmationRequired?:boolean;message?:string;user:{name:string;email:string;role?:string}}>(path, { method: "POST", body: JSON.stringify(body) });
+      if (result.confirmationRequired || !result.token) {
+        setMessage(result.message || "Check your email to confirm your account before logging in.");
+        return;
+      }
       saveApiSession(result.token, result.user);
       const returnTo = new URLSearchParams(location.search).get("returnTo");
       location.href = returnTo?.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/dashboard";
