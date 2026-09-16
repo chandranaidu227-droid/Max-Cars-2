@@ -5,6 +5,9 @@
 [build.environment]
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
+  # Public project URLs and Supabase publishable keys are intentionally exposed.
+  # Keep scanning enabled for passwords, service-role keys and other secrets.
+  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,PUBLIC_BASE_URL"
 
 [[redirects]]
   from = "/api/*"
