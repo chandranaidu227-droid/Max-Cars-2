@@ -1,13 +1,30 @@
 const express = require("express");
 const { asyncRoute } = require("../middleware");
 const { result, publicUser } = require("../supabase");
+function authFailure(error, operation) {
+  const messages = {
+    email_address_not_authorized: [503, "Email delivery is not configured for this address. Please contact MAX CARS support."],
+    email_provider_disabled: [503, "Email sign-up is disabled. Please contact MAX CARS support."],
+    signup_disabled: [503, "Account creation is disabled. Please contact MAX CARS support."],
+    over_email_send_rate_limit: [429, "Too many emails were requested. Please wait before trying again."],
+    over_request_rate_limit: [429, "Too many requests. Please wait before trying again."],
+    weak_password: [400, "Choose a stronger password and try again."],
+    validation_failed: [400, "Check the email address and password, then try again."],
+    user_already_exists: [409, "An account already exists for this email. Log in or reset your password."],
+    email_exists: [409, "An account already exists for this email. Log in or reset your password."],
+  };
+  const [status, message] = messages[error?.code] || [503, "Authentication could not complete. Please try again later or contact MAX CARS support."];
+  // Supabase's Auth log has the underlying SMTP/database cause; do not expose it to browsers.
+  console.error("Supabase Auth error:", { operation, code: error?.code || "unknown", status: error?.status || null });
+  return { status, body: { success: false, message } };
+}
 module.exports = function authRoutes(settings, protect) {
   const router = express.Router();
   router.post("/register", asyncRoute(async (req, res) => {
     const { email, password, name, phone = "", city = "" } = req.body || {};
     if (typeof name !== "string" || name.trim().length < 2 || typeof password !== "string" || password.length < 8) return res.status(400).json({ success: false, message: "Enter your name and a password of at least 8 characters" });
     const { data, error } = await req.supabase.auth.signUp({ email, password, options: { data: { name: name.trim(), phone, city }, emailRedirectTo: `${settings.publicBaseUrl}/auth/callback` } });
-    if (error) throw error;
+    if (error) { const failure = authFailure(error, "register"); return res.status(failure.status).json(failure.body); }
     res.status(201).json({ success: true, token: data.session?.access_token, refreshToken: data.session?.refresh_token, user: data.user ? publicUser(data.user) : null, confirmationRequired: !data.session, message: "Check your email to confirm your account before logging in." });
   }));
   router.post("/login", asyncRoute(async (req, res) => {
@@ -20,7 +37,7 @@ module.exports = function authRoutes(settings, protect) {
   }));
   router.post("/forgot-password", asyncRoute(async (req, res) => {
     const { error } = await req.supabase.auth.resetPasswordForEmail(req.body?.email, { redirectTo: `${settings.publicBaseUrl}/reset-password` });
-    if (error) throw error;
+    if (error) { const failure = authFailure(error, "forgot-password"); return res.status(failure.status).json(failure.body); }
     res.json({ success: true, message: "If the account exists, recovery instructions will be sent." });
   }));
   router.post("/reset-password", protect, asyncRoute(async (req, res) => {

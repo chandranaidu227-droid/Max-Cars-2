@@ -57,3 +57,17 @@ test("signup without a session requires email confirmation", async () => {
     assert.equal(body.token, undefined);
   });
 });
+test("signup reports disabled email delivery without claiming the database is down", async () => {
+  await withApp({ auth: { signUp: async () => ({ data: null, error: { code: "email_address_not_authorized", status: 500 } }) } }, async base => {
+    const response = await fetch(`${base}/api/auth/register`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: "Test User", email: "test@example.com", password: "valid-password" }) });
+    assert.equal(response.status, 503);
+    assert.match((await response.json()).message, /Email delivery is not configured/);
+  });
+});
+test("password recovery reports email rate limits", async () => {
+  await withApp({ auth: { resetPasswordForEmail: async () => ({ error: { code: "over_email_send_rate_limit", status: 429 } }) } }, async base => {
+    const response = await fetch(`${base}/api/auth/forgot-password`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "test@example.com" }) });
+    assert.equal(response.status, 429);
+    assert.match((await response.json()).message, /wait/);
+  });
+});
