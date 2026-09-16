@@ -64,7 +64,7 @@ try {
   await send("Page.navigate", { url: base + "/reset-password" });
   await waitFor("document.querySelector('form.authcard') && Object.keys(document.querySelector('form.authcard')).some(key => key.startsWith('__reactProps$'))");
   await evaluate(`(() => { const form = document.querySelector('form.authcard'); form.elements.password.value = 'Example-Password123'; form.elements.confirm.value = 'Example-Password123'; form.requestSubmit(); })()`);
-  await waitFor("document.querySelector('[role=status]')?.textContent.includes('invalid or expired')");
+  await waitFor("document.querySelector('[role=status]')?.textContent.includes('Open the recovery link')");
   await send("Page.navigate", { url: base + "/dashboard" });
   await waitFor("location.pathname === '/login'");
   assert.match(await evaluate("location.search"), /returnTo=/);

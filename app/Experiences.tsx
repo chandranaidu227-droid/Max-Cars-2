@@ -923,11 +923,12 @@ export function AuthExperience({
             {message}
           </p>
         )}
+        {mode === "forgot" && message && <a href="/reset-password">Enter email code or open reset link</a>}
         <button className="red" disabled={submitting}>
           {submitting ? "Please wait…" : mode === "signup"
             ? "Create secure account"
             : mode === "forgot"
-              ? "Send recovery instructions"
+              ? "Send password reset email"
               : "Log in securely"}
         </button>
         {mode === "login" && (

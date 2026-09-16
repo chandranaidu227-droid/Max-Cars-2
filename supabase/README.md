@@ -36,6 +36,22 @@ Keep email confirmation enabled. Configure custom SMTP in Supabase's Auth email
 settings for customer delivery. Supabase's default sender restricts recipients
 and rates; a successful API call alone does not prove inbox delivery.
 
+To send a 6-digit password reset code, open **Authentication → Emails → Templates →
+Reset password** in the Supabase dashboard. Keep the reset link and add the
+following line to that template, then save it:
+
+```html
+<p>Your MAX CARS password reset code is: <strong>{{ .Token }}</strong></p>
+<p>Or use this link: <a href="{{ .ConfirmationURL }}">Reset password</a></p>
+```
+
+The website's **Forgot password** form sends this email. The user can enter
+their email, the 6-digit code, and a new password on `/reset-password`, or use
+the link. Supabase verifies the recovery code before the password changes.
+The email template cannot be changed with the public publishable key; it must
+be saved in the project dashboard. If Gmail SMTP is used, configure port 465
+or 587 and a current Google app password, then verify delivery to an inbox.
+
 Signup shows a confirmation message instead of creating a fake logged-in state.
 Confirmation and recovery links establish a Supabase session in the browser.
 The password form calls Supabase's authenticated password update API.
